@@ -1,0 +1,74 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Assassin Master Yi"
+    },
+    {
+        "num": 2,
+        "name": "Chosen Master Yi"
+    },
+    {
+        "num": 3,
+        "name": "Ionia Master Yi"
+    },
+    {
+        "num": 4,
+        "name": "Samurai Yi"
+    },
+    {
+        "num": 5,
+        "name": "Headhunter Master Yi"
+    },
+    {
+        "num": 9,
+        "name": "PROJECT: Yi"
+    },
+    {
+        "num": 10,
+        "name": "Cosmic Blade Master Yi"
+    },
+    {
+        "num": 11,
+        "name": "Eternal Sword Yi"
+    },
+    {
+        "num": 17,
+        "name": "Snow Man Yi"
+    },
+    {
+        "num": 24,
+        "name": "Blood Moon Master Yi"
+    },
+    {
+        "num": 33,
+        "name": "PsyOps Master Yi"
+    },
+    {
+        "num": 42,
+        "name": "Debonair Master Yi"
+    },
+    {
+        "num": 52,
+        "name": "Spirit Blossom Master Yi"
+    },
+    {
+        "num": 53,
+        "name": "Prestige Spirit Blossom Master Yi"
+    },
+    {
+        "num": 89,
+        "name": "Inkshadow Master Yi"
+    },
+    {
+        "num": 96,
+        "name": "Heavenscale Master Yi"
+    },
+    {
+        "num": 106,
+        "name": "Victorious Master Yi"
+    }
+]

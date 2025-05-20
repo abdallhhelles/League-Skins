@@ -1,0 +1,42 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Festival Kassadin"
+    },
+    {
+        "num": 2,
+        "name": "Deep One Kassadin"
+    },
+    {
+        "num": 3,
+        "name": "Pre-Void Kassadin"
+    },
+    {
+        "num": 4,
+        "name": "Harbinger Kassadin"
+    },
+    {
+        "num": 5,
+        "name": "Cosmic Reaver Kassadin"
+    },
+    {
+        "num": 6,
+        "name": "Count Kassadin"
+    },
+    {
+        "num": 14,
+        "name": "Hextech Kassadin"
+    },
+    {
+        "num": 15,
+        "name": "Shockblade Kassadin"
+    },
+    {
+        "num": 24,
+        "name": "Dragonmancer Kassadin"
+    }
+]

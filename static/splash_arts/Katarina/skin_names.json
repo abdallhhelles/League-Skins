@@ -1,0 +1,78 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Mercenary Katarina"
+    },
+    {
+        "num": 2,
+        "name": "Red Card Katarina"
+    },
+    {
+        "num": 3,
+        "name": "Bilgewater Katarina"
+    },
+    {
+        "num": 4,
+        "name": "Kitty Cat Katarina"
+    },
+    {
+        "num": 5,
+        "name": "High Command Katarina"
+    },
+    {
+        "num": 6,
+        "name": "Sandstorm Katarina"
+    },
+    {
+        "num": 7,
+        "name": "Slay Belle Katarina"
+    },
+    {
+        "num": 8,
+        "name": "Warring Kingdoms Katarina"
+    },
+    {
+        "num": 9,
+        "name": "PROJECT: Katarina"
+    },
+    {
+        "num": 10,
+        "name": "Death Sworn Katarina"
+    },
+    {
+        "num": 12,
+        "name": "Battle Academia Katarina"
+    },
+    {
+        "num": 21,
+        "name": "Blood Moon Katarina"
+    },
+    {
+        "num": 29,
+        "name": "Battle Queen Katarina"
+    },
+    {
+        "num": 37,
+        "name": "High Noon Katarina"
+    },
+    {
+        "num": 47,
+        "name": "Faerie Court Katarina"
+    },
+    {
+        "num": 48,
+        "name": "Prestige Faerie Court Katarina"
+    },
+    {
+        "num": 59,
+        "name": "Chosen of the Wolf Katarina"
+    },
+    {
+        "num": 60,
+        "name": "Prestige Masque of the Black Rose Katarina"
+    }
+]

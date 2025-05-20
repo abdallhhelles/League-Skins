@@ -1,0 +1,62 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Scuba Gragas"
+    },
+    {
+        "num": 2,
+        "name": "Hillbilly Gragas"
+    },
+    {
+        "num": 3,
+        "name": "Santa Gragas"
+    },
+    {
+        "num": 4,
+        "name": "Gragas, Esq."
+    },
+    {
+        "num": 5,
+        "name": "Vandal Gragas"
+    },
+    {
+        "num": 6,
+        "name": "Oktoberfest Gragas"
+    },
+    {
+        "num": 7,
+        "name": "Superfan Gragas"
+    },
+    {
+        "num": 8,
+        "name": "Fnatic Gragas"
+    },
+    {
+        "num": 9,
+        "name": "Gragas Caskbreaker"
+    },
+    {
+        "num": 10,
+        "name": "Arctic Ops Gragas"
+    },
+    {
+        "num": 11,
+        "name": "Warden Gragas"
+    },
+    {
+        "num": 20,
+        "name": "Space Groove Gragas"
+    },
+    {
+        "num": 29,
+        "name": "High Noon Gragas"
+    },
+    {
+        "num": 39,
+        "name": "Music Fan Gragas"
+    }
+]

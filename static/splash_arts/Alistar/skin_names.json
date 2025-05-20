@@ -1,0 +1,62 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Black Alistar"
+    },
+    {
+        "num": 2,
+        "name": "Golden Alistar"
+    },
+    {
+        "num": 3,
+        "name": "Matador Alistar"
+    },
+    {
+        "num": 4,
+        "name": "Longhorn Alistar"
+    },
+    {
+        "num": 5,
+        "name": "Unchained Alistar"
+    },
+    {
+        "num": 6,
+        "name": "Infernal Alistar"
+    },
+    {
+        "num": 7,
+        "name": "Sweeper Alistar"
+    },
+    {
+        "num": 8,
+        "name": "Marauder Alistar"
+    },
+    {
+        "num": 9,
+        "name": "SKT T1 Alistar"
+    },
+    {
+        "num": 10,
+        "name": "Moo Cow Alistar"
+    },
+    {
+        "num": 19,
+        "name": "Hextech Alistar"
+    },
+    {
+        "num": 20,
+        "name": "Conqueror Alistar"
+    },
+    {
+        "num": 22,
+        "name": "Blackfrost Alistar"
+    },
+    {
+        "num": 29,
+        "name": "Lunar Beast Alistar"
+    }
+]

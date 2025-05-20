@@ -1,0 +1,30 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Black Belt Udyr"
+    },
+    {
+        "num": 2,
+        "name": "Primal Udyr"
+    },
+    {
+        "num": 3,
+        "name": "Spirit Guard Udyr"
+    },
+    {
+        "num": 4,
+        "name": "Definitely Not Udyr"
+    },
+    {
+        "num": 5,
+        "name": "Dragon Oracle Udyr"
+    },
+    {
+        "num": 6,
+        "name": "Inkshadow Udyr"
+    }
+]

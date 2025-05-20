@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ champ_name }} Skins - League Splash Arts</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+
+  <header id="header-bar">
+    <h1>League Skins Vote</h1>
+    <nav id="authLinks">
+      <a href="{{ url_for('index') }}">← Back to all champions</a>
+      {% if session.email %}
+        <div class="welcome-container">
+          <span>Welcome, {{ session.email.split('@')[0] }}!</span>
+          <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>
+    <h1>{{ champ_name }} Skins</h1>
+
+    <div class="skins-container" id="skins-container">
+      {% for skin in skins %}
+        <div class="skin-card" data-skin-id="{{ skin.skin_num }}" data-champ-name="{{ champ_name }}">
+          <img src="{{ url_for('static', filename=skin.file_path) }}" alt="{{ skin.skin_name }}" class="skin-image" />
+          <div class="skin-info">
+            <div class="vote-left">
+              <button class="vote-btn" aria-label="Vote up"
+  {% if champ_votes[skin.skin_num].voted %} disabled style="color:crimson; opacity:1; cursor: not-allowed;" {% endif %}>
+  ❤︎
+</button>
+
+              <div class="vote-count" id="vote-count-{{ skin.skin_num }}">
+                {{ champ_votes[skin.skin_num].count if champ_votes and skin.skin_num in champ_votes else 0 }}
+              </div>
+            </div>
+            <p class="skin-name">{{ skin.skin_name }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </main>
+
+  <div id="modal" aria-hidden="true">
+    <span class="close-btn" role="button" aria-label="Close modal">&times;</span>
+    <img src="" alt="Skin Preview" id="modal-img" />
+  </div>
+
+  <footer id="footer-bar">
+    <p>Coded between queues. Fueled by losses. Made by Akrot.</p>
+  </footer>
+
+  <script>
+    const skinsContainer = document.getElementById('skins-container');
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modal-img');
+    const closeBtn = modal.querySelector('.close-btn');
+
+    function sortSkins() {
+      const cards = Array.from(skinsContainer.children);
+      cards.sort((a, b) => {
+        const votesA = parseInt(a.querySelector('.vote-count').textContent) || 0;
+        const votesB = parseInt(b.querySelector('.vote-count').textContent) || 0;
+        return votesB - votesA;
+      });
+      cards.forEach(card => skinsContainer.appendChild(card));
+    }
+
+    document.querySelectorAll('.vote-btn').forEach(btn => {
+      btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        const skinCard = e.target.closest('.skin-card');
+        if (!skinCard) return;
+
+        const skinId = skinCard.dataset.skinId;
+        const champName = skinCard.dataset.champName;
+        if (!skinId || !champName) return alert('Invalid skin or champion.');
+
+        try {
+          const response = await fetch(`/vote/${encodeURIComponent(champName)}/${encodeURIComponent(skinId)}`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+if (response.ok) {
+  const data = await response.json();
+  const voteCountElem = skinCard.querySelector('.vote-count');
+  voteCountElem.textContent = data.votes;
+
+  // Disable button after vote
+  e.target.disabled = true;
+  e.target.style.opacity = '0.5';
+  e.target.style.cursor = 'not-allowed';
+} else {
+  const errorData = await response.json();
+  alert(errorData.error || 'Failed to vote.');
+}
+sortSkins();
+
+        } catch (error) {
+          console.error('Voting error:', error);
+          alert('An error occurred while voting.');
+        }
+      });
+    });
+
+    document.querySelectorAll('.skin-image').forEach(img => {
+      img.addEventListener('click', e => {
+        modalImg.src = e.target.src;
+        modalImg.alt = e.target.alt;
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+      });
+    });
+
+    function closeModal() {
+      modal.classList.remove('active');
+      modalImg.src = '';
+      modalImg.alt = '';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closeModal();
+    });
+
+    sortSkins();
+  </script>
+
+</body>
+</html>

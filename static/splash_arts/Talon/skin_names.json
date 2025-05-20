@@ -1,0 +1,54 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Renegade Talon"
+    },
+    {
+        "num": 2,
+        "name": "Crimson Elite Talon"
+    },
+    {
+        "num": 3,
+        "name": "Dragonblade Talon"
+    },
+    {
+        "num": 4,
+        "name": "SSW Talon"
+    },
+    {
+        "num": 5,
+        "name": "Blood Moon Talon"
+    },
+    {
+        "num": 12,
+        "name": "Enduring Sword Talon"
+    },
+    {
+        "num": 20,
+        "name": "Talon Blackwood"
+    },
+    {
+        "num": 29,
+        "name": "Withered Rose Talon"
+    },
+    {
+        "num": 38,
+        "name": "High Noon Talon"
+    },
+    {
+        "num": 39,
+        "name": "Prestige High Noon Talon"
+    },
+    {
+        "num": 49,
+        "name": "Primal Ambush Talon"
+    },
+    {
+        "num": 59,
+        "name": "Grand Reckoning Talon"
+    }
+]

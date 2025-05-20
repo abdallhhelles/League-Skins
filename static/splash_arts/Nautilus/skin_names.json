@@ -1,0 +1,46 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Abyssal Nautilus"
+    },
+    {
+        "num": 2,
+        "name": "Subterranean Nautilus"
+    },
+    {
+        "num": 3,
+        "name": "AstroNautilus"
+    },
+    {
+        "num": 4,
+        "name": "Warden Nautilus"
+    },
+    {
+        "num": 5,
+        "name": "Worldbreaker Nautilus"
+    },
+    {
+        "num": 6,
+        "name": "Conqueror Nautilus"
+    },
+    {
+        "num": 9,
+        "name": "Shan Hai Scrolls Nautilus"
+    },
+    {
+        "num": 18,
+        "name": "Fright Night Nautilus"
+    },
+    {
+        "num": 27,
+        "name": "Cosmic Paladin Nautilus"
+    },
+    {
+        "num": 36,
+        "name": "Crystalis Indomitus Nautilus"
+    }
+]

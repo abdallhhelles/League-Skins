@@ -1,0 +1,42 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Desperada Cassiopeia"
+    },
+    {
+        "num": 2,
+        "name": "Siren Cassiopeia"
+    },
+    {
+        "num": 3,
+        "name": "Mythic Cassiopeia"
+    },
+    {
+        "num": 4,
+        "name": "Jade Fang Cassiopeia"
+    },
+    {
+        "num": 8,
+        "name": "Eternum Cassiopeia"
+    },
+    {
+        "num": 9,
+        "name": "Spirit Blossom Cassiopeia"
+    },
+    {
+        "num": 18,
+        "name": "Coven Cassiopeia"
+    },
+    {
+        "num": 28,
+        "name": "Bewitching Cassiopeia"
+    },
+    {
+        "num": 38,
+        "name": "Prestige Mythmaker Cassiopeia"
+    }
+]

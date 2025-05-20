@@ -1,0 +1,38 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Dragonslayer Braum"
+    },
+    {
+        "num": 2,
+        "name": "El Tigre Braum"
+    },
+    {
+        "num": 3,
+        "name": "Braum Lionheart"
+    },
+    {
+        "num": 10,
+        "name": "Santa Braum"
+    },
+    {
+        "num": 11,
+        "name": "Crime City Braum"
+    },
+    {
+        "num": 24,
+        "name": "Sugar Rush Braum"
+    },
+    {
+        "num": 33,
+        "name": "Pool Party Braum"
+    },
+    {
+        "num": 42,
+        "name": "Grill Master Braum"
+    }
+]

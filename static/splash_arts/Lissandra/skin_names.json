@@ -1,0 +1,38 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Bloodstone Lissandra"
+    },
+    {
+        "num": 2,
+        "name": "Blade Queen Lissandra"
+    },
+    {
+        "num": 3,
+        "name": "Program Lissandra"
+    },
+    {
+        "num": 4,
+        "name": "Coven Lissandra"
+    },
+    {
+        "num": 12,
+        "name": "Dark Cosmic Lissandra"
+    },
+    {
+        "num": 23,
+        "name": "Porcelain Lissandra"
+    },
+    {
+        "num": 33,
+        "name": "Prestige Porcelain Lissandra"
+    },
+    {
+        "num": 34,
+        "name": "Space Groove Lissandra"
+    }
+]

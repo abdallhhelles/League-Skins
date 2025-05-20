@@ -1,0 +1,54 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Noxus Poppy"
+    },
+    {
+        "num": 2,
+        "name": "Lollipoppy"
+    },
+    {
+        "num": 3,
+        "name": "Blacksmith Poppy"
+    },
+    {
+        "num": 4,
+        "name": "Ragdoll Poppy"
+    },
+    {
+        "num": 5,
+        "name": "Battle Regalia Poppy"
+    },
+    {
+        "num": 6,
+        "name": "Scarlet Hammer Poppy"
+    },
+    {
+        "num": 7,
+        "name": "Star Guardian Poppy"
+    },
+    {
+        "num": 14,
+        "name": "Snow Fawn Poppy"
+    },
+    {
+        "num": 15,
+        "name": "Hextech Poppy"
+    },
+    {
+        "num": 16,
+        "name": "Astronaut Poppy"
+    },
+    {
+        "num": 24,
+        "name": "Bewitching Poppy"
+    },
+    {
+        "num": 33,
+        "name": "Cafe Cuties Poppy"
+    }
+]

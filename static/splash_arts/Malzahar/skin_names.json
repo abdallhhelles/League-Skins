@@ -1,0 +1,58 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Vizier Malzahar"
+    },
+    {
+        "num": 2,
+        "name": "Shadow Prince Malzahar"
+    },
+    {
+        "num": 3,
+        "name": "Djinn Malzahar"
+    },
+    {
+        "num": 4,
+        "name": "Overlord Malzahar"
+    },
+    {
+        "num": 5,
+        "name": "Snow Day Malzahar"
+    },
+    {
+        "num": 6,
+        "name": "Battle Boss Malzahar"
+    },
+    {
+        "num": 7,
+        "name": "Hextech Malzahar"
+    },
+    {
+        "num": 9,
+        "name": "Worldbreaker Malzahar"
+    },
+    {
+        "num": 18,
+        "name": "Beezahar"
+    },
+    {
+        "num": 28,
+        "name": "Debonair Malzahar"
+    },
+    {
+        "num": 38,
+        "name": "Three Honors Malzahar"
+    },
+    {
+        "num": 39,
+        "name": "Empyrean Malzahar"
+    },
+    {
+        "num": 49,
+        "name": "Fatebreaker Malzahar"
+    }
+]

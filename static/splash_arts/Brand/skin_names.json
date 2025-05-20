@@ -1,0 +1,54 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Apocalyptic Brand"
+    },
+    {
+        "num": 2,
+        "name": "Vandal Brand"
+    },
+    {
+        "num": 3,
+        "name": "Cryocore Brand"
+    },
+    {
+        "num": 4,
+        "name": "Zombie Brand"
+    },
+    {
+        "num": 5,
+        "name": "Spirit Fire Brand"
+    },
+    {
+        "num": 6,
+        "name": "Battle Boss Brand"
+    },
+    {
+        "num": 7,
+        "name": "Arclight Brand"
+    },
+    {
+        "num": 8,
+        "name": "Eternal Dragon Brand"
+    },
+    {
+        "num": 21,
+        "name": "Debonair Brand"
+    },
+    {
+        "num": 22,
+        "name": "Prestige Debonair Brand"
+    },
+    {
+        "num": 33,
+        "name": "Street Demons Brand"
+    },
+    {
+        "num": 42,
+        "name": "Empyrean Brand"
+    }
+]

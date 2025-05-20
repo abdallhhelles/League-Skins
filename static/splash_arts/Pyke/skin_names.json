@@ -1,0 +1,46 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Sand Wraith Pyke"
+    },
+    {
+        "num": 9,
+        "name": "Blood Moon Pyke"
+    },
+    {
+        "num": 16,
+        "name": "PROJECT: Pyke"
+    },
+    {
+        "num": 25,
+        "name": "PsyOps Pyke"
+    },
+    {
+        "num": 34,
+        "name": "Sentinel Pyke"
+    },
+    {
+        "num": 44,
+        "name": "Ashen Knight Pyke"
+    },
+    {
+        "num": 45,
+        "name": "Empyrean Pyke"
+    },
+    {
+        "num": 53,
+        "name": "Soul Fighter Pyke"
+    },
+    {
+        "num": 54,
+        "name": "Prestige Soul Fighter Pyke"
+    },
+    {
+        "num": 64,
+        "name": "Fright Night Pyke"
+    }
+]

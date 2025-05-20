@@ -1,0 +1,30 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Battlecast Vel'Koz"
+    },
+    {
+        "num": 2,
+        "name": "Arclight Vel'Koz"
+    },
+    {
+        "num": 3,
+        "name": "Definitely Not Vel'Koz"
+    },
+    {
+        "num": 4,
+        "name": "Infernal Vel'Koz"
+    },
+    {
+        "num": 11,
+        "name": "Blackfrost Vel'Koz"
+    },
+    {
+        "num": 20,
+        "name": "Bee'Koz"
+    }
+]

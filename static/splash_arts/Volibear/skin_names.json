@@ -1,0 +1,42 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Thunder Lord Volibear"
+    },
+    {
+        "num": 2,
+        "name": "Northern Storm Volibear"
+    },
+    {
+        "num": 3,
+        "name": "Runeguard Volibear"
+    },
+    {
+        "num": 4,
+        "name": "Captain Volibear"
+    },
+    {
+        "num": 5,
+        "name": "El Rayo Volibear"
+    },
+    {
+        "num": 6,
+        "name": "The Thousand-Pierced Bear"
+    },
+    {
+        "num": 7,
+        "name": "Duality Dragon Volibear"
+    },
+    {
+        "num": 9,
+        "name": "Prestige Duality Dragon Volibear"
+    },
+    {
+        "num": 19,
+        "name": "Inkshadow Volibear"
+    }
+]

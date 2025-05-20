@@ -1,0 +1,38 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Runeborn Xerath"
+    },
+    {
+        "num": 2,
+        "name": "Battlecast Xerath"
+    },
+    {
+        "num": 3,
+        "name": "Scorched Earth Xerath"
+    },
+    {
+        "num": 4,
+        "name": "Guardian of the Sands Xerath"
+    },
+    {
+        "num": 5,
+        "name": "Dark Star Xerath"
+    },
+    {
+        "num": 12,
+        "name": "Arcana Xerath"
+    },
+    {
+        "num": 21,
+        "name": "Astronaut Xerath"
+    },
+    {
+        "num": 30,
+        "name": "Crystalis Indomitus Xerath"
+    }
+]

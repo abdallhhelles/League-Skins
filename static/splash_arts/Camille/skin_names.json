@@ -1,0 +1,34 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Program Camille"
+    },
+    {
+        "num": 2,
+        "name": "Coven Camille"
+    },
+    {
+        "num": 10,
+        "name": "iG Camille"
+    },
+    {
+        "num": 11,
+        "name": "Arcana Camille"
+    },
+    {
+        "num": 21,
+        "name": "Strike Commander Camille"
+    },
+    {
+        "num": 31,
+        "name": "Winterblessed Camille"
+    },
+    {
+        "num": 32,
+        "name": "Prestige Winterblessed Camille"
+    }
+]

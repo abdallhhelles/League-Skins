@@ -1,0 +1,17 @@
+{
+    "majd@majd.com": {
+        "password": "scrypt:32768:8:1$DJS7x7NM5uPSZqTD$ed394276c398175f1801f0226aaa7776ce06bcde66aee41c0131b4b43b371391a0e8edc4641796999e1ea81daba39d6c3d4d8241959485e5ab743458b4dc2e02",
+        "verified": true,
+        "token": "c1ce3642-1732-4734-8851-d4cd3120439a"
+    },
+    "abdallhhelles97@gmail.com": {
+        "password": "scrypt:32768:8:1$6b2uuDK270j10Lez$147ca1137a35a31403b7e9f9e4dde3797ee348a59e388392c3b10505ccc7d9e422712d580f7a1303e08decd3ff987079f3ac3443bccd02fb860aa353e7eac40c",
+        "verified": true,
+        "token": "575bb0ff-8623-46ae-8894-634859d7c5c1"
+    },
+    "a@a.com": {
+        "password": "scrypt:32768:8:1$Tt8NAA6ASsLOx7NO$5662ad0ab9310d16c5d4ab1a119fe665ebc608adeb4c2a98ab09785fe4b734e21d760dccc074c7222c04c0bc19e5651b46a513e617cc48c3f11f20517ac07e05",
+        "verified": true,
+        "token": "df994c1a-413e-456b-aa91-1dbd5ec0dc86"
+    }
+}

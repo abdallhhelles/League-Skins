@@ -1,0 +1,46 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Hextech Sion"
+    },
+    {
+        "num": 2,
+        "name": "Barbarian Sion"
+    },
+    {
+        "num": 3,
+        "name": "Lumberjack Sion"
+    },
+    {
+        "num": 4,
+        "name": "Warmonger Sion"
+    },
+    {
+        "num": 5,
+        "name": "Mecha Zero Sion"
+    },
+    {
+        "num": 14,
+        "name": "Worldbreaker Sion"
+    },
+    {
+        "num": 22,
+        "name": "Blackfrost Sion"
+    },
+    {
+        "num": 30,
+        "name": "High Noon Sion"
+    },
+    {
+        "num": 40,
+        "name": "Cosmic Paladin Sion"
+    },
+    {
+        "num": 49,
+        "name": "Grand Reckoning Sion"
+    }
+]

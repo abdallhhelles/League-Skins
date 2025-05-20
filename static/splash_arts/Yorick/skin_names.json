@@ -1,0 +1,42 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Undertaker Yorick"
+    },
+    {
+        "num": 2,
+        "name": "Pentakill Yorick"
+    },
+    {
+        "num": 3,
+        "name": "Arclight Yorick"
+    },
+    {
+        "num": 4,
+        "name": "Meowrick"
+    },
+    {
+        "num": 12,
+        "name": "Resistance Yorick"
+    },
+    {
+        "num": 21,
+        "name": "Pentakill III: Lost Chapter Yorick"
+    },
+    {
+        "num": 30,
+        "name": "Spirit Blossom Yorick"
+    },
+    {
+        "num": 40,
+        "name": "Dark Star Yorick"
+    },
+    {
+        "num": 50,
+        "name": "High Noon Yorick"
+    }
+]

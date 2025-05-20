@@ -1,0 +1,46 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "UFO Corki"
+    },
+    {
+        "num": 2,
+        "name": "Ice Toboggan Corki"
+    },
+    {
+        "num": 3,
+        "name": "Red Baron Corki"
+    },
+    {
+        "num": 4,
+        "name": "Hot Rod Corki"
+    },
+    {
+        "num": 5,
+        "name": "Urfrider Corki"
+    },
+    {
+        "num": 6,
+        "name": "Dragonwing Corki"
+    },
+    {
+        "num": 7,
+        "name": "Fnatic Corki"
+    },
+    {
+        "num": 8,
+        "name": "Arcade Corki"
+    },
+    {
+        "num": 18,
+        "name": "Corgi Corki"
+    },
+    {
+        "num": 26,
+        "name": "Astronaut Corki"
+    }
+]

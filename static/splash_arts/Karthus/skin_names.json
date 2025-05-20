@@ -1,0 +1,42 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Phantom Karthus"
+    },
+    {
+        "num": 2,
+        "name": "Statue of Karthus"
+    },
+    {
+        "num": 3,
+        "name": "Grim Reaper Karthus"
+    },
+    {
+        "num": 4,
+        "name": "Pentakill Karthus"
+    },
+    {
+        "num": 5,
+        "name": "Fnatic Karthus"
+    },
+    {
+        "num": 9,
+        "name": "Karthus Lightsbane"
+    },
+    {
+        "num": 10,
+        "name": "Infernal Karthus"
+    },
+    {
+        "num": 17,
+        "name": "Pentakill III: Lost Chapter Karthus"
+    },
+    {
+        "num": 26,
+        "name": "Elderwood Karthus"
+    }
+]

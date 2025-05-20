@@ -1,0 +1,50 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Forsaken Olaf"
+    },
+    {
+        "num": 2,
+        "name": "Glacial Olaf"
+    },
+    {
+        "num": 3,
+        "name": "Brolaf"
+    },
+    {
+        "num": 4,
+        "name": "Pentakill Olaf"
+    },
+    {
+        "num": 5,
+        "name": "Marauder Olaf"
+    },
+    {
+        "num": 6,
+        "name": "Butcher Olaf"
+    },
+    {
+        "num": 15,
+        "name": "SKT T1 Olaf"
+    },
+    {
+        "num": 16,
+        "name": "Dragonslayer Olaf"
+    },
+    {
+        "num": 25,
+        "name": "Sentinel Olaf"
+    },
+    {
+        "num": 35,
+        "name": "Pentakill III: Lost Chapter Olaf"
+    },
+    {
+        "num": 44,
+        "name": "Infernal Olaf"
+    }
+]

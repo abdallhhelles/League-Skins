@@ -1,0 +1,26 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Sandscourge Skarner"
+    },
+    {
+        "num": 2,
+        "name": "Earthrune Skarner"
+    },
+    {
+        "num": 3,
+        "name": "Battlecast Alpha Skarner"
+    },
+    {
+        "num": 4,
+        "name": "Guardian of the Sands Skarner"
+    },
+    {
+        "num": 5,
+        "name": "Cosmic Sting Skarner"
+    }
+]

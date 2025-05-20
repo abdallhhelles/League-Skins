@@ -1,0 +1,54 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Sandstorm Ekko"
+    },
+    {
+        "num": 2,
+        "name": "Academy Ekko"
+    },
+    {
+        "num": 3,
+        "name": "PROJECT: Ekko"
+    },
+    {
+        "num": 11,
+        "name": "SKT T1 Ekko"
+    },
+    {
+        "num": 12,
+        "name": "Trick or Treat Ekko"
+    },
+    {
+        "num": 19,
+        "name": "True Damage Ekko"
+    },
+    {
+        "num": 28,
+        "name": "Pulsefire Ekko"
+    },
+    {
+        "num": 36,
+        "name": "Arcane Firelight Ekko"
+    },
+    {
+        "num": 45,
+        "name": "Star Guardian Ekko"
+    },
+    {
+        "num": 46,
+        "name": "Prestige Star Guardian Ekko"
+    },
+    {
+        "num": 56,
+        "name": "Breakout True Damage Ekko"
+    },
+    {
+        "num": 57,
+        "name": "Arcane Last Stand Ekko"
+    }
+]

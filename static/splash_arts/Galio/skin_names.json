@@ -1,0 +1,42 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Enchanted Galio"
+    },
+    {
+        "num": 2,
+        "name": "Hextech Galio"
+    },
+    {
+        "num": 3,
+        "name": "Commando Galio"
+    },
+    {
+        "num": 4,
+        "name": "Gatekeeper Galio"
+    },
+    {
+        "num": 5,
+        "name": "Debonair Galio"
+    },
+    {
+        "num": 6,
+        "name": "Birdio"
+    },
+    {
+        "num": 13,
+        "name": "Infernal Galio"
+    },
+    {
+        "num": 19,
+        "name": "Dragon Guardian Galio"
+    },
+    {
+        "num": 28,
+        "name": "Mythmaker Galio"
+    }
+]

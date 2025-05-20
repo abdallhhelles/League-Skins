@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register - League Splash Arts</title>
+  <style>
+    body {
+      background: #121212;
+      color: #eee;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    form {
+      background: #222;
+      padding: 30px;
+      border-radius: 10px;
+      width: 320px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+    }
+    h2 {
+      margin-bottom: 20px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 1.5px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: none;
+      background: #333;
+      color: #eee;
+      font-size: 1rem;
+    }
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      outline: none;
+      background: #444;
+      border: 1px solid #0af;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #0af;
+      border: none;
+      border-radius: 5px;
+      color: #121212;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #08c;
+    }
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      color: #f66;
+      font-weight: 600;
+    }
+    a {
+      display: block;
+      margin-top: 15px;
+      text-align: center;
+      color: #0af;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <form method="POST" action="{{ url_for('register') }}">
+    <h2>Create Account</h2>
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" placeholder="your@email.com" required />
+
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" placeholder="Strong password" required />
+
+    <label for="password_confirm">Confirm Password</label>
+    <input type="password" name="password_confirm" id="password_confirm" placeholder="Re-enter password" required />
+
+    <button type="submit">Register</button>
+
+    {% if message %}
+      <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <a href="{{ url_for('login') }}">Already have an account? Login</a>
+  </form>
+</body>
+</html>

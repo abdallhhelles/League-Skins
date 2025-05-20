@@ -1,0 +1,34 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Emerald Taric"
+    },
+    {
+        "num": 2,
+        "name": "Armor of the Fifth Age Taric"
+    },
+    {
+        "num": 3,
+        "name": "Bloodstone Taric"
+    },
+    {
+        "num": 4,
+        "name": "Pool Party Taric"
+    },
+    {
+        "num": 9,
+        "name": "Taric Luminshield"
+    },
+    {
+        "num": 18,
+        "name": "Space Groove Taric"
+    },
+    {
+        "num": 27,
+        "name": "Fatebreaker Taric"
+    }
+]

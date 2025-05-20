@@ -1,0 +1,70 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Sanguine Garen"
+    },
+    {
+        "num": 2,
+        "name": "Desert Trooper Garen"
+    },
+    {
+        "num": 3,
+        "name": "Commando Garen"
+    },
+    {
+        "num": 4,
+        "name": "Dreadknight Garen"
+    },
+    {
+        "num": 5,
+        "name": "Rugged Garen"
+    },
+    {
+        "num": 6,
+        "name": "Steel Legion Garen"
+    },
+    {
+        "num": 10,
+        "name": "Rogue Admiral Garen"
+    },
+    {
+        "num": 11,
+        "name": "Warring Kingdoms Garen"
+    },
+    {
+        "num": 13,
+        "name": "God-King Garen"
+    },
+    {
+        "num": 14,
+        "name": "Demacia Vice Garen"
+    },
+    {
+        "num": 22,
+        "name": "Mecha Kingdoms Garen"
+    },
+    {
+        "num": 23,
+        "name": "Prestige Mecha Kingdoms Garen"
+    },
+    {
+        "num": 24,
+        "name": "Battle Academia Garen"
+    },
+    {
+        "num": 33,
+        "name": "Mythmaker Garen"
+    },
+    {
+        "num": 43,
+        "name": "Pengu Garen"
+    },
+    {
+        "num": 44,
+        "name": "Fallen God-King Garen"
+    }
+]

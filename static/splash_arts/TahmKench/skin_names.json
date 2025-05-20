@@ -1,0 +1,30 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Master Chef Tahm Kench"
+    },
+    {
+        "num": 2,
+        "name": "Urf Kench"
+    },
+    {
+        "num": 3,
+        "name": "Coin Emperor Tahm Kench"
+    },
+    {
+        "num": 11,
+        "name": "Arcana Tahm Kench"
+    },
+    {
+        "num": 20,
+        "name": "High Noon Tahm Kench"
+    },
+    {
+        "num": 30,
+        "name": "Shan Hai Scrolls Tahm Kench"
+    }
+]

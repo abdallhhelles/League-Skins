@@ -1,0 +1,54 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Neon Strike Vi"
+    },
+    {
+        "num": 2,
+        "name": "Officer Vi"
+    },
+    {
+        "num": 3,
+        "name": "Debonair Vi"
+    },
+    {
+        "num": 4,
+        "name": "Demon Vi"
+    },
+    {
+        "num": 5,
+        "name": "Warring Kingdoms Vi"
+    },
+    {
+        "num": 11,
+        "name": "PROJECT: Vi"
+    },
+    {
+        "num": 12,
+        "name": "Heartbreaker Vi"
+    },
+    {
+        "num": 20,
+        "name": "PsyOps Vi"
+    },
+    {
+        "num": 29,
+        "name": "Arcane Undercity Vi"
+    },
+    {
+        "num": 30,
+        "name": "Heartache Vi"
+    },
+    {
+        "num": 39,
+        "name": "Primal Ambush Vi"
+    },
+    {
+        "num": 48,
+        "name": "Arcane Brawler Vi"
+    }
+]

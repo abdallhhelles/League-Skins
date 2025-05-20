@@ -1,0 +1,38 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Headhunter Rengar"
+    },
+    {
+        "num": 2,
+        "name": "Night Hunter Rengar"
+    },
+    {
+        "num": 3,
+        "name": "SSW Rengar"
+    },
+    {
+        "num": 8,
+        "name": "Mecha Rengar"
+    },
+    {
+        "num": 15,
+        "name": "Pretty Kitty Rengar"
+    },
+    {
+        "num": 23,
+        "name": "Guardian of the Sands Rengar"
+    },
+    {
+        "num": 30,
+        "name": "Sentinel Rengar"
+    },
+    {
+        "num": 40,
+        "name": "Street Demons Rengar"
+    }
+]

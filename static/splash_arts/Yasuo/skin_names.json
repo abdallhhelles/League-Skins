@@ -1,0 +1,74 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "High Noon Yasuo"
+    },
+    {
+        "num": 2,
+        "name": "PROJECT: Yasuo"
+    },
+    {
+        "num": 3,
+        "name": "Blood Moon Yasuo"
+    },
+    {
+        "num": 9,
+        "name": "Nightbringer Yasuo"
+    },
+    {
+        "num": 10,
+        "name": "Odyssey Yasuo"
+    },
+    {
+        "num": 17,
+        "name": "Battle Boss Yasuo"
+    },
+    {
+        "num": 18,
+        "name": "True Damage Yasuo"
+    },
+    {
+        "num": 35,
+        "name": "Prestige True Damage Yasuo"
+    },
+    {
+        "num": 36,
+        "name": "Spirit Blossom Yasuo"
+    },
+    {
+        "num": 45,
+        "name": "Sea Dog Yasuo"
+    },
+    {
+        "num": 54,
+        "name": "Truth Dragon Yasuo"
+    },
+    {
+        "num": 55,
+        "name": "Dream Dragon Yasuo"
+    },
+    {
+        "num": 56,
+        "name": "Inkshadow Yasuo"
+    },
+    {
+        "num": 57,
+        "name": "Prestige Inkshadow Yasuo"
+    },
+    {
+        "num": 68,
+        "name": "Foreseen Yasuo"
+    },
+    {
+        "num": 77,
+        "name": "Battle Wolf Yasuo"
+    },
+    {
+        "num": 87,
+        "name": "Genesis Nightbringer Yasuo"
+    }
+]

@@ -1,0 +1,62 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Blight Crystal Varus"
+    },
+    {
+        "num": 2,
+        "name": "Arclight Varus"
+    },
+    {
+        "num": 3,
+        "name": "Arctic Ops Varus"
+    },
+    {
+        "num": 4,
+        "name": "Heartseeker Varus"
+    },
+    {
+        "num": 5,
+        "name": "Varus Swiftbolt"
+    },
+    {
+        "num": 6,
+        "name": "Dark Star Varus"
+    },
+    {
+        "num": 7,
+        "name": "Conqueror Varus"
+    },
+    {
+        "num": 9,
+        "name": "Infernal Varus"
+    },
+    {
+        "num": 16,
+        "name": "PROJECT: Varus"
+    },
+    {
+        "num": 17,
+        "name": "Cosmic Hunter Varus"
+    },
+    {
+        "num": 34,
+        "name": "High Noon Varus"
+    },
+    {
+        "num": 44,
+        "name": "Snow Moon Varus"
+    },
+    {
+        "num": 53,
+        "name": "Empyrean Varus"
+    },
+    {
+        "num": 60,
+        "name": "Spirit Blossom Varus"
+    }
+]

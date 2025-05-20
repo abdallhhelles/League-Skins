@@ -1,0 +1,46 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Frozen Terror Nocturne"
+    },
+    {
+        "num": 2,
+        "name": "Void Nocturne"
+    },
+    {
+        "num": 3,
+        "name": "Ravager Nocturne"
+    },
+    {
+        "num": 4,
+        "name": "Haunting Nocturne"
+    },
+    {
+        "num": 5,
+        "name": "Eternum Nocturne"
+    },
+    {
+        "num": 6,
+        "name": "Cursed Revenant Nocturne"
+    },
+    {
+        "num": 7,
+        "name": "Old God Nocturne"
+    },
+    {
+        "num": 16,
+        "name": "Hextech Nocturne"
+    },
+    {
+        "num": 17,
+        "name": "Broken Covenant Nocturne"
+    },
+    {
+        "num": 26,
+        "name": "Empyrean Nocturne"
+    }
+]

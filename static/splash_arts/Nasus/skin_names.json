@@ -1,0 +1,58 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Galactic Nasus"
+    },
+    {
+        "num": 2,
+        "name": "Pharaoh Nasus"
+    },
+    {
+        "num": 3,
+        "name": "Dreadknight Nasus"
+    },
+    {
+        "num": 4,
+        "name": "Riot K-9 Nasus"
+    },
+    {
+        "num": 5,
+        "name": "Infernal Nasus"
+    },
+    {
+        "num": 6,
+        "name": "Archduke Nasus"
+    },
+    {
+        "num": 10,
+        "name": "Worldbreaker Nasus"
+    },
+    {
+        "num": 11,
+        "name": "Lunar Guardian Nasus"
+    },
+    {
+        "num": 16,
+        "name": "Battlecast Nasus"
+    },
+    {
+        "num": 25,
+        "name": "Space Groove Nasus"
+    },
+    {
+        "num": 35,
+        "name": "Armored Titan Nasus"
+    },
+    {
+        "num": 45,
+        "name": "Nightbringer Nasus"
+    },
+    {
+        "num": 54,
+        "name": "Fatemaker Nasus"
+    }
+]

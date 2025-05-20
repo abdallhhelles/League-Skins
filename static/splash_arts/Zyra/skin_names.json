@@ -1,0 +1,54 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Wildfire Zyra"
+    },
+    {
+        "num": 2,
+        "name": "Haunted Zyra"
+    },
+    {
+        "num": 3,
+        "name": "SKT T1 Zyra"
+    },
+    {
+        "num": 4,
+        "name": "Dragon Sorceress Zyra"
+    },
+    {
+        "num": 5,
+        "name": "Coven Zyra"
+    },
+    {
+        "num": 6,
+        "name": "Prestige Coven Zyra"
+    },
+    {
+        "num": 7,
+        "name": "Crystal Rose Zyra"
+    },
+    {
+        "num": 16,
+        "name": "Crime City Nightmare Zyra"
+    },
+    {
+        "num": 36,
+        "name": "Mythmaker Zyra"
+    },
+    {
+        "num": 46,
+        "name": "Street Demons Zyra"
+    },
+    {
+        "num": 55,
+        "name": "Blood Moon Zyra"
+    },
+    {
+        "num": 64,
+        "name": "Spirit Blossom Zyra"
+    }
+]

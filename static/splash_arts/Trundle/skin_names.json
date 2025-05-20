@@ -1,0 +1,38 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Lil' Slugger Trundle"
+    },
+    {
+        "num": 2,
+        "name": "Junkyard Trundle"
+    },
+    {
+        "num": 3,
+        "name": "Traditional Trundle"
+    },
+    {
+        "num": 4,
+        "name": "Constable Trundle"
+    },
+    {
+        "num": 5,
+        "name": "Worldbreaker Trundle"
+    },
+    {
+        "num": 6,
+        "name": "Dragonslayer Trundle"
+    },
+    {
+        "num": 12,
+        "name": "Fright Night Trundle"
+    },
+    {
+        "num": 21,
+        "name": "Esports Fan Trundle"
+    }
+]

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login - League Splash Arts</title>
+  <style>
+    body {
+      background: #121212;
+      color: #eee;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    form {
+      background: #1e1e1e;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.7);
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    input {
+      margin-bottom: 20px;
+      padding: 12px 15px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+      background: #2a2a2a;
+      color: #eee;
+    }
+    input:focus {
+      outline: 2px solid #0af;
+      background: #222;
+    }
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #0af;
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #08c;
+    }
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      color: #f55;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <form method="POST" action="{{ url_for('login') }}">
+    <h2>Login</h2>
+    <input type="email" name="email" placeholder="Email" required autofocus />
+    <input type="password" name="password" placeholder="Password" required />
+    <button type="submit">Log In</button>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="message">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+  </form>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>League Skins Vote</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<header id="header-bar">
+  <h1>League Skins Vote</h1>
+  <input type="text" id="searchBar" placeholder="Search champions..." />
+  <nav id="authLinks">
+    {% if session.email %}
+      <div class="welcome-container">
+        <span>Welcome, {{ session.email.split('@')[0] }}!</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    {% else %}
+      <a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a>
+    {% endif %}
+  </nav>
+</header>
+
+<main>
+    <h1>Vote for your favorite skins!</h1>
+  <div class="champions-container">
+    {% for champ, skins in all_champions.items() %}
+      <div class="champion-card">
+        <a href="{{ url_for('champion_page', champ_name=champ) }}">
+          <img src="{{ url_for('static', filename=skins[0].file_path) }}" alt="{{ champ }} splash" />
+          <h2>{{ champ }}</h2>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</main>
+
+<footer id="footer-bar">
+  <p>Coded between queues. Fueled by losses. Made by Akrot.</p>
+</footer>
+
+<script>
+  const searchBar = document.getElementById('searchBar');
+  const champions = document.querySelectorAll('.champion-card');
+
+  searchBar.addEventListener('input', () => {
+    const query = searchBar.value.toLowerCase();
+    champions.forEach(card => {
+      const name = card.querySelector('h2').textContent.toLowerCase();
+      card.style.display = name.includes(query) ? 'flex' : 'none';
+    });
+  });
+</script>
+
+</body>
+</html>

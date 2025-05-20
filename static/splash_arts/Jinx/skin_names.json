@@ -1,0 +1,62 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Crime City Jinx"
+    },
+    {
+        "num": 2,
+        "name": "Firecracker Jinx"
+    },
+    {
+        "num": 3,
+        "name": "Zombie Slayer Jinx"
+    },
+    {
+        "num": 4,
+        "name": "Star Guardian Jinx"
+    },
+    {
+        "num": 12,
+        "name": "Ambitious Elf Jinx"
+    },
+    {
+        "num": 13,
+        "name": "Odyssey Jinx"
+    },
+    {
+        "num": 20,
+        "name": "PROJECT: Jinx"
+    },
+    {
+        "num": 29,
+        "name": "Heartseeker Jinx"
+    },
+    {
+        "num": 37,
+        "name": "Arcane Enemy Jinx"
+    },
+    {
+        "num": 38,
+        "name": "Battle Cat Jinx"
+    },
+    {
+        "num": 40,
+        "name": "Prestige Battle Cat Jinx"
+    },
+    {
+        "num": 51,
+        "name": "Cafe Cuties Jinx"
+    },
+    {
+        "num": 60,
+        "name": "Arcane Fractured Jinx"
+    },
+    {
+        "num": 62,
+        "name": "T1 Jinx"
+    }
+]

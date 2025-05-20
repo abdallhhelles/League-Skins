@@ -1,0 +1,70 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Silver Kayle"
+    },
+    {
+        "num": 2,
+        "name": "Viridian Kayle"
+    },
+    {
+        "num": 3,
+        "name": "Transcended Kayle"
+    },
+    {
+        "num": 4,
+        "name": "Battleborn Kayle"
+    },
+    {
+        "num": 5,
+        "name": "Judgment Kayle"
+    },
+    {
+        "num": 6,
+        "name": "Aether Wing Kayle"
+    },
+    {
+        "num": 7,
+        "name": "Riot Kayle"
+    },
+    {
+        "num": 8,
+        "name": "Iron Inquisitor Kayle"
+    },
+    {
+        "num": 9,
+        "name": "Pentakill Kayle"
+    },
+    {
+        "num": 15,
+        "name": "PsyOps Kayle"
+    },
+    {
+        "num": 24,
+        "name": "Dragonslayer Kayle"
+    },
+    {
+        "num": 33,
+        "name": "Pentakill III: Lost Chapter Kayle"
+    },
+    {
+        "num": 42,
+        "name": "Sun-Eater Kayle"
+    },
+    {
+        "num": 57,
+        "name": "Immortal Journey Kayle"
+    },
+    {
+        "num": 66,
+        "name": "Empyrean Kayle"
+    },
+    {
+        "num": 67,
+        "name": "Prestige Empyrean Kayle"
+    }
+]

@@ -1,0 +1,46 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Charred Maokai"
+    },
+    {
+        "num": 2,
+        "name": "Totemic Maokai"
+    },
+    {
+        "num": 3,
+        "name": "Festive Maokai"
+    },
+    {
+        "num": 4,
+        "name": "Haunted Maokai"
+    },
+    {
+        "num": 5,
+        "name": "Goalkeeper Maokai"
+    },
+    {
+        "num": 6,
+        "name": "Meowkai"
+    },
+    {
+        "num": 7,
+        "name": "Victorious Maokai"
+    },
+    {
+        "num": 16,
+        "name": "Worldbreaker Maokai"
+    },
+    {
+        "num": 24,
+        "name": "Astronaut Maokai"
+    },
+    {
+        "num": 33,
+        "name": "DRX Maokai"
+    }
+]

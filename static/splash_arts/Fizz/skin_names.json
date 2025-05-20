@@ -1,0 +1,58 @@
+[
+    {
+        "num": 0,
+        "name": "default"
+    },
+    {
+        "num": 1,
+        "name": "Atlantean Fizz"
+    },
+    {
+        "num": 2,
+        "name": "Tundra Fizz"
+    },
+    {
+        "num": 3,
+        "name": "Fisherman Fizz"
+    },
+    {
+        "num": 4,
+        "name": "Void Fizz"
+    },
+    {
+        "num": 8,
+        "name": "Cottontail Fizz"
+    },
+    {
+        "num": 9,
+        "name": "Super Galaxy Fizz"
+    },
+    {
+        "num": 10,
+        "name": "Omega Squad Fizz"
+    },
+    {
+        "num": 14,
+        "name": "Fuzz Fizz"
+    },
+    {
+        "num": 15,
+        "name": "Prestige Fuzz Fizz"
+    },
+    {
+        "num": 16,
+        "name": "Little Devil Fizz"
+    },
+    {
+        "num": 25,
+        "name": "Prestige Fuzz Fizz (2022)"
+    },
+    {
+        "num": 26,
+        "name": "Astronaut Fizz"
+    },
+    {
+        "num": 35,
+        "name": "Rain Shepherd Fizz"
+    }
+]
