@@ -160,14 +160,15 @@ def register():
 
         users[email] = {
             'password': hashed_password,
-            'verified': False,
+            'verified': True,
             'token': verification_token
         }
         save_users(users)
 
         print(f"Verification link (fake): http://localhost:5000/verify_email/{verification_token}")
 
-        flash('Registration successful! Check your email to verify your account.')
+    #    flash('Registration successful! Check your email to verify your account.')
+        flash('Registration successful!')
         return redirect(url_for('login'))
 
     return render_template('register.html')
