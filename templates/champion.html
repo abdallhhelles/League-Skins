@@ -43,6 +43,12 @@
             <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ '★' if vote_data.favorite else '☆' }}</button>
           </div>
         </div>
+        <div class="skin-card__actions">
+          <a class="skin-link" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query={{ champ_name | urlencode }}+{{ skin.skin_name | urlencode }}+SkinSpotlights">
+            ▶ Watch gameplay
+          </a>
+          <div class="muted">Opens a YouTube search in a new tab</div>
+        </div>
       </article>
     {% endfor %}
   </div>

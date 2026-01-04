@@ -5,8 +5,8 @@ A Flask web experience for browsing League of Legends champions, previewing ever
 ## Feature showcase (for developers)
 - **Always up-to-date catalog**: Startup sync checks every champion/skin and downloads any missing splash art and JSON metadata.
 - **Skin voting**: Authenticated users can vote once per skin, with vote totals stored per skin.
-- **Search & filtering**: Browse champions, view skin details, and open modal splash previews.
-- **Responsive Riot-inspired UI**: Shared layout, hero sections, modal previews, and consistent palette across pages.
+- **Search & filtering**: Browse champions, view skin details, open modal splash previews, and jump to YouTube gameplay searches for any skin ("Champion SkinName SkinSpotlights").
+- **Responsive Riot-inspired UI**: Shared layout, hero sections, modal previews, and cohesive light/dark themes with a user toggle.
 - **Account management**: Registration with public usernames, login, email verification gating, and session-based access control for voting.
 - **Player profiles**: Public usernames with private emails, selectable main champion, and personal favorites gallery.
 - **Static JSON storage**: Votes, users, comments, favorites, and feedback are stored as JSON for simple deployments without a database.
@@ -74,7 +74,9 @@ python lol_splash_downloader/splash_art_update.py
 8. **Content pages** – Visit `/about` and `/legal` to confirm copy renders.
 9. **Profiles & favorites** – Update your username/main on `/profile`, favorite a few skins, and confirm they appear on your profile and public page `/u/<username>`.
 10. **Contact & feedback** – Submit both forms and confirm entries appear in the admin dashboard inbox.
-11. **Responsive UI** – Resize the browser (mobile/tablet/desktop) and ensure grids/cards adapt.
+11. **Skin videos** – Open a champion page, click "Watch gameplay" on a skin, and verify YouTube opens with a `Champion SkinName SkinSpotlights` search.
+12. **Theme toggle** – Switch between light and dark modes with the header toggle and reload to confirm persistence.
+13. **Responsive UI** – Resize the browser (mobile/tablet/desktop) and ensure grids/cards adapt.
 
 ## Deployment checklist (public release)
 - Set `FLASK_SECRET_KEY`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` to production values.

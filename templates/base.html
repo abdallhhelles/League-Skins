@@ -7,6 +7,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script>
+    (() => {
+      const stored = localStorage.getItem('theme') || 'dark';
+      const body = document.documentElement;
+      body.classList.toggle('theme-light', stored === 'light');
+    })();
+  </script>
 </head>
 <body>
   <header class="site-header">
@@ -28,6 +35,7 @@
       {% endif %}
     </nav>
     <div class="auth">
+      <button class="button ghost toggle" id="theme-toggle" type="button" aria-label="Toggle theme">🌓</button>
       {% if session.email %}
         <div class="welcome">Hi, {{ users[session.email].username if session.email in users else session.email.split('@')[0] }}</div>
         <a class="button ghost" href="{{ url_for('profile') }}">Profile</a>
@@ -63,5 +71,13 @@
       <a href="{{ url_for('contact') }}">Contact</a>
     </div>
   </footer>
+  <script>
+    const toggle = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+    toggle?.addEventListener('click', () => {
+      const isLight = root.classList.toggle('theme-light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+  </script>
 </body>
 </html>
