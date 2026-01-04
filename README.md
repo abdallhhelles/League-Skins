@@ -7,7 +7,7 @@ A Flask web experience for browsing League of Legends champions, previewing ever
 - **Skin voting**: Authenticated users can vote once per skin, with vote totals stored per skin.
 - **Search & filtering**: Browse champions, view skin details, and open modal splash previews.
 - **Responsive Riot-inspired UI**: Shared layout, hero sections, modal previews, and consistent palette across pages.
-- **Account management**: Registration, login, verification token storage, and session-based access control for voting.
+- **Account management**: Registration, login, email verification gating, and session-based access control for voting.
 - **Static JSON storage**: Votes and users are stored as JSON for simple deployments without a database.
 - **Admin testing account**: Pre-provisioned admin user for quick QA (see below).
 - **Leaderboard & stats**: Dedicated top-voted page plus sitewide champion/skin/vote counts for quick health checks.
@@ -24,17 +24,19 @@ A Flask web experience for browsing League of Legends champions, previewing ever
    export FLASK_SECRET_KEY="change-me"
    export ADMIN_EMAIL="admin@yourdomain"
    export ADMIN_PASSWORD="StrongPassword!"
+   export RESET_VOTES_ON_START=false
    ```
 3. Run the app:
    ```bash
    python app.py
    ```
 4. Open http://localhost:8080 to browse, vote, and view About/Legal/Top pages.
+5. By default, votes reset on each start for clean testing; set `RESET_VOTES_ON_START=false` to retain history.
 
 ## Admin/testing account
 A verified admin/testing user is created automatically on startup if missing:
-- **Email:** `admin@riftvote.test`
-- **Password:** `TestAdmin#2024`
+- **Email:** `abdallhhelles97@gmail.com`
+- **Password:** `abdallhhelles..`
 
 Override the email/password with `ADMIN_EMAIL` and `ADMIN_PASSWORD` environment variables for production.
 
@@ -53,12 +55,13 @@ python lol_splash_downloader/splash_art_update.py
 1. **Dependency check** – `pip install -r requirements.txt` completes without errors.
 2. **Static sync** – Start the app and confirm the startup log prints a splash sync summary; spot-check that new champion folders/images appear in `static/splash_arts/`.
 3. **Authentication** –
-   - Register a new user, verify login succeeds.
+   - Register a new user, open the console log for the verification link, and verify the account.
+   - Confirm login is blocked until verification is complete.
    - Log in with the admin testing account.
 4. **Voting flow** –
-   - Navigate to a champion page, open a skin, cast a vote.
+   - Navigate to a champion page, open a skin, cast a vote with a verified account.
    - Attempt a second vote on the same skin (expect a "You already voted" error).
-5. **Data persistence** – Restart the server and verify votes and user sessions persist via `votes_db.json`/`users_db.json` contents.
+5. **Data persistence** – If `RESET_VOTES_ON_START=false`, restart the server and verify votes persist via `votes_db.json`.
 6. **Content pages** – Visit `/about` and `/legal` to confirm copy renders.
 7. **Responsive UI** – Resize the browser (mobile/tablet/desktop) and ensure grids/cards adapt.
 

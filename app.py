@@ -9,8 +9,9 @@ from lol_splash_downloader.splash_art_update import sync_splash_assets
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_secret_key_here')
 
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@riftvote.test').lower()
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'TestAdmin#2024')
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'abdallhhelles97@gmail.com').lower()
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'abdallhhelles..')
+RESET_VOTES_ON_START = os.environ.get('RESET_VOTES_ON_START', 'true').lower() == 'true'
 
 USERS_DB_FILE = 'users_db.json'
 VOTES_DB_FILE = 'votes_db.json'  # Store votes per skin, including who voted
@@ -45,19 +46,31 @@ users = load_users()
 votes = load_votes()
 
 
+def reset_votes():
+    """Clear all votes for a fresh launch or environment reset."""
+
+    global votes
+    votes = {}
+    save_votes(votes)
+    print("All votes have been reset for a clean start.")
+
+
 def ensure_admin_user():
     """Create a default admin/testing account if it doesn't exist."""
 
     admin_profile = users.get(ADMIN_EMAIL)
+    hashed_admin_password = generate_password_hash(ADMIN_PASSWORD)
+
     if not admin_profile:
         users[ADMIN_EMAIL] = {
-            'password': generate_password_hash(ADMIN_PASSWORD),
+            'password': hashed_admin_password,
             'verified': True,
             'token': ''
         }
         save_users(users)
         print(f"Provisioned admin account: {ADMIN_EMAIL}")
-    elif not admin_profile.get('verified'):
+    else:
+        admin_profile['password'] = hashed_admin_password
         admin_profile['verified'] = True
         admin_profile['token'] = ''
         save_users(users)
@@ -73,6 +86,9 @@ def bootstrap_splash_assets():
     except Exception as exc:  # pragma: no cover - startup safety
         print(f"Splash asset sync failed: {exc}")
 
+
+if RESET_VOTES_ON_START:
+    reset_votes()
 
 ensure_admin_user()
 bootstrap_splash_assets()
@@ -214,6 +230,10 @@ def vote_skin(champ_name, skin_id):
 
     vote_key = f"{champ_name}-{skin_id}"
 
+    user_profile = users.get(user_email)
+    if not user_profile or not user_profile.get('verified'):
+        return jsonify({'error': 'Please verify your email before voting.'}), 403
+
     # Initialize vote record if missing
     if vote_key not in votes:
         votes[vote_key] = {"count": 0, "voters": []}
@@ -260,15 +280,14 @@ def register():
 
         users[email] = {
             'password': hashed_password,
-            'verified': True,
+            'verified': False,
             'token': verification_token
         }
         save_users(users)
 
-        print(f"Verification link (fake): http://localhost:5000/verify_email/{verification_token}")
+        print(f"Verification link (fake): http://localhost:8080/verify_email/{verification_token}")
 
-    #    flash('Registration successful! Check your email to verify your account.')
-        flash('Registration successful!')
+        flash('Registration successful! Check your email to verify your account before voting.')
         return redirect(url_for('login'))
 
     return render_template('register.html')
