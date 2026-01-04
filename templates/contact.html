@@ -33,43 +33,12 @@
       Contact email (optional)
       <input type="email" id="contact_email" name="contact_email" placeholder="you@example.com" />
     </label>
-    <div class="grid">
-      <label class="stack" for="server">
-        Server
-        <select id="server" name="server">
-          <option value="">Select server</option>
-          <option>NA</option>
-          <option>EUW</option>
-          <option>EUNE</option>
-          <option>LAN</option>
-          <option>LAS</option>
-          <option>BR</option>
-          <option>KR</option>
-          <option>JP</option>
-          <option>OCE</option>
-          <option>RU</option>
-          <option>TR</option>
-        </select>
-      </label>
-      <label class="stack" for="main_role">
-        Main role
-        <select id="main_role" name="main_role">
-          <option value="">Select role</option>
-          <option>Top</option>
-          <option>Jungle</option>
-          <option>Mid</option>
-          <option>ADC</option>
-          <option>Support</option>
-        </select>
-      </label>
-    </div>
     <label class="stack" for="message">
       Message
       <textarea id="message" name="message" rows="5" placeholder="How can we help?" required></textarea>
     </label>
     <button type="submit" class="button primary">Send message</button>
     <p class="muted">Signed-in users will be linked to their account automatically; emails stay private.</p>
-    <p class="muted">We collect server, role, and contact details to keep follow-ups organized and exportable.</p>
   </form>
 </section>
 {% endblock %}
