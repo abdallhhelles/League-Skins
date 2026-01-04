@@ -11,7 +11,6 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_secret_key_here')
 
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'abdallhhelles97@gmail.com').lower()
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'abdallhhelles..')
-RESET_VOTES_ON_START = os.environ.get('RESET_VOTES_ON_START', 'true').lower() == 'true'
 FEEDBACK_DB_FILE = 'feedback_db.json'
 
 USERS_DB_FILE = 'users_db.json'
@@ -97,6 +96,18 @@ def reset_votes():
     print("All votes have been reset for a clean start.")
 
 
+def backup_votes():
+    """Create a timestamped backup of current votes before any destructive action."""
+
+    from datetime import datetime
+
+    os.makedirs('backups', exist_ok=True)
+    backup_name = f"backups/votes_backup_{datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}.json"
+    with open(backup_name, 'w') as f:
+        json.dump(votes, f, indent=4)
+    return backup_name
+
+
 def ensure_admin_user():
     """Create a default admin/testing account if it doesn't exist."""
 
@@ -152,9 +163,6 @@ def bootstrap_splash_assets():
     except Exception as exc:  # pragma: no cover - startup safety
         print(f"Splash asset sync failed: {exc}")
 
-
-if RESET_VOTES_ON_START:
-    reset_votes()
 
 ensure_admin_user()
 hydrate_user_profiles()
@@ -349,6 +357,14 @@ def top_skins():
     return render_template('top.html', leaderboard=leaderboard, stats=stats)
 
 
+def issue_reset_token():
+    token = session.get('vote_reset_token')
+    if not token:
+        token = uuid.uuid4().hex[:8].upper()
+        session['vote_reset_token'] = token
+    return token
+
+
 @app.route('/admin')
 def admin_dashboard():
     user_email = session.get('email')
@@ -375,6 +391,7 @@ def admin_dashboard():
     ]
     karma_board.sort(key=lambda entry: entry["karma"], reverse=True)
     feedback_sorted = sorted(feedback_entries, key=lambda f: f.get('created_at', ''), reverse=True)
+    reset_token = issue_reset_token()
 
     return render_template(
         'admin.html',
@@ -384,17 +401,39 @@ def admin_dashboard():
         champion_comment_totals=champion_comment_totals,
         karma_board=karma_board,
         feedback=feedback_sorted,
+        reset_token=reset_token,
     )
 
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
+@app.route('/admin/reset_votes', methods=['POST'])
+def admin_reset_votes():
+    user_email = session.get('email')
+    if user_email != ADMIN_EMAIL:
+        flash('Admin access required.')
+        return redirect(url_for('login'))
 
+    token = session.get('vote_reset_token')
+    provided_token = request.form.get('token_input', '').strip().upper()
+    provided_email = request.form.get('confirm_email', '').strip().lower()
+    acknowledgment = request.form.get('acknowledge') == 'on'
 
-@app.route('/legal')
-def legal():
-    return render_template('legal.html')
+    if not (token and provided_token == token):
+        flash('Reset halted: confirmation code mismatch.')
+        return redirect(url_for('admin_dashboard'))
+
+    if provided_email != ADMIN_EMAIL:
+        flash('Reset halted: admin email confirmation failed.')
+        return redirect(url_for('admin_dashboard'))
+
+    if not acknowledgment:
+        flash('Reset halted: you must acknowledge the backup + irreversible action.')
+        return redirect(url_for('admin_dashboard'))
+
+    backup_path = backup_votes()
+    reset_votes()
+    session.pop('vote_reset_token', None)
+    flash(f'Votes reset. Backup saved to {backup_path}.')
+    return redirect(url_for('admin_dashboard'))
 
 
 @app.route('/about')

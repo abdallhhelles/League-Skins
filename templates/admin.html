@@ -50,6 +50,26 @@
       <li><strong>{{ total_users - verified_users }}</strong> pending verification</li>
     </ul>
   </div>
+  <div>
+    <p class="eyebrow">Maintenance</p>
+    <h2>Vote reset (with backup)</h2>
+    <p class="muted">Use only when you need a clean ballot box. A full backup is created automatically.</p>
+    <form action="{{ url_for('admin_reset_votes') }}" method="POST" class="form">
+      <label class="form__field">
+        <span>Step 1 — enter the confirmation code <code>{{ reset_token }}</code></span>
+        <input type="text" name="token_input" placeholder="Exact code" required />
+      </label>
+      <label class="form__field">
+        <span>Step 2 — enter the admin email to confirm intent</span>
+        <input type="email" name="confirm_email" placeholder="{{ ADMIN_EMAIL }}" required />
+      </label>
+      <label class="form__checkbox">
+        <input type="checkbox" name="acknowledge" required />
+        <span>I understand this permanently clears votes and I will restore from the backup if needed.</span>
+      </label>
+      <button type="submit" class="button button--danger">Reset votes &amp; save backup</button>
+    </form>
+  </div>
 </section>
 
 <section class="panel">

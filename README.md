@@ -13,7 +13,7 @@ A Flask web experience for browsing League of Legends champions, previewing ever
 - **Admin testing account**: Pre-provisioned admin user for quick QA (see below).
 - **Leaderboard & stats**: Dedicated top-voted page plus sitewide champion/skin/vote/comment/favorite counts for quick health checks.
 - **Comments with karma**: Champion threads with up/down voting per comment and author karma totals.
-- **Admin dashboard**: Stats, verification mix, comment volume, karma leaderboard, and inbox view for feedback/contact messages.
+- **Admin dashboard**: Stats, verification mix, comment volume, karma leaderboard, inbox view for feedback/contact messages, and a guarded vote-reset tool with automatic backups.
 - **Contact & feedback**: Dedicated forms for support/legal requests and product feedback, routed to the admin dashboard.
 - **Compliance**: Legal page covering terms, privacy, cookies, and Riot attribution.
 
@@ -29,14 +29,13 @@ A Flask web experience for browsing League of Legends champions, previewing ever
    export FLASK_SECRET_KEY="change-me"
    export ADMIN_EMAIL="admin@yourdomain"
    export ADMIN_PASSWORD="StrongPassword!"
-   export RESET_VOTES_ON_START=false
    ```
 3. Run the app:
    ```bash
    python app.py
    ```
 4. Open http://localhost:8080 to browse, vote, comment, and view About/Legal/Top/Admin pages.
-5. By default, votes reset on each start for clean testing; set `RESET_VOTES_ON_START=false` to retain history.
+5. Vote history persists across restarts; use the admin dashboard reset (with backup) when you need a clean slate.
 
 ## Admin/testing account
 A verified admin/testing user is created automatically on startup if missing:
@@ -70,7 +69,8 @@ python lol_splash_downloader/splash_art_update.py
    - Add comments on a champion as a verified user, then up/down vote from another verified account.
    - Confirm scores update and karma totals change for the author.
 6. **Admin dashboard** – Visit `/admin` with the admin user to confirm stats populate, comment counts render, and karma leaderboard orders correctly.
-7. **Data persistence** – If `RESET_VOTES_ON_START=false`, restart the server and verify votes persist via `votes_db.json` and comments via `comments_db.json`.
+   - (Optional) Exercise the guarded vote reset by entering the provided code + admin email; confirm a backup file appears under `backups/`.
+7. **Data persistence** – Restart the server and verify votes persist via `votes_db.json` and comments via `comments_db.json`.
 8. **Content pages** – Visit `/about` and `/legal` to confirm copy renders.
 9. **Profiles & favorites** – Update your username/main on `/profile`, favorite a few skins, and confirm they appear on your profile and public page `/u/<username>`.
 10. **Contact & feedback** – Submit both forms and confirm entries appear in the admin dashboard inbox.
