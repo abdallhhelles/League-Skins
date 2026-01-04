@@ -43,7 +43,7 @@
               {{ 'Voted' if vote_data.voted else 'Vote' }}
             </button>
             <div class="vote__count" id="vote-count-{{ skin.skin_num }}">{{ vote_data.count }}</div>
-            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ 'Saved' if vote_data.favorite else 'Save' }}</button>
+            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ 'Saved ❤️' if vote_data.favorite else 'Save ❤️' }}</button>
           </div>
         </div>
           <div class="skin-card__actions">
@@ -135,7 +135,7 @@
         }
         const isAdded = data.status === 'added';
         btn.dataset.favorite = isAdded ? 'true' : 'false';
-        btn.textContent = isAdded ? 'Saved' : 'Save';
+        btn.textContent = isAdded ? 'Saved ❤️' : 'Save ❤️';
       } catch (err) {
         alert('Network error while updating favorite.');
       }
