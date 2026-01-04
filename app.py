@@ -5,6 +5,7 @@ import uuid
 from io import StringIO
 
 import requests
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -101,7 +102,11 @@ def get_display_name(email: str) -> str:
 
 @app.context_processor
 def inject_globals():
-    return {"ADMIN_EMAIL": ADMIN_EMAIL, "users": users}
+    return {
+        "ADMIN_EMAIL": ADMIN_EMAIL,
+        "users": users,
+        "current_year": datetime.utcnow().year,
+    }
 
 
 def reset_votes(log_message=False):
@@ -116,9 +121,6 @@ def reset_votes(log_message=False):
 
 def backup_votes():
     """Create a timestamped backup of current votes before any destructive action."""
-
-    from datetime import datetime
-
     os.makedirs('backups', exist_ok=True)
     backup_name = f"backups/votes_backup_{datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}.json"
     with open(backup_name, 'w') as f:
@@ -449,7 +451,6 @@ def admin_dashboard():
     stats = compute_site_stats(all_champions)
 
     total_users = len(users)
-    verified_users = sum(1 for profile in users.values() if profile.get('verified'))
     champion_comment_totals = {
         champ: len(comment_list) for champ, comment_list in comments.items()
     }
@@ -458,7 +459,7 @@ def admin_dashboard():
             "email": email,
             "username": profile.get('username') or email.split('@')[0],
             "karma": compute_user_karma(email),
-            "verified": profile.get('verified'),
+            "status": "Active",
         }
         for email, profile in users.items()
     ]
@@ -470,7 +471,6 @@ def admin_dashboard():
         'admin.html',
         stats=stats,
         total_users=total_users,
-        verified_users=verified_users,
         champion_comment_totals=champion_comment_totals,
         karma_board=karma_board,
         feedback=feedback_sorted,
@@ -577,8 +577,8 @@ def vote_skin(champ_name, skin_id):
     vote_key = f"{champ_name}-{skin_id}"
 
     user_profile = users.get(user_email)
-    if not user_profile or not user_profile.get('verified'):
-        return jsonify({'error': 'Please verify your email before voting.'}), 403
+    if not user_profile:
+        return jsonify({'error': 'User not found.'}), 403
 
     # Initialize vote record if missing
     if vote_key not in votes:
@@ -606,8 +606,8 @@ def favorite_skin(champ_name, skin_id):
 
     user_email = session['email']
     user_profile = users.get(user_email)
-    if not user_profile or not user_profile.get('verified'):
-        return jsonify({'error': 'Please verify your email before saving favorites.'}), 403
+    if not user_profile:
+        return jsonify({'error': 'User not found.'}), 403
 
     all_champions = load_all_skins()
     champ_skins = all_champions.get(champ_name)
@@ -630,8 +630,8 @@ def add_comment(champ_name):
 
     user_email = session['email']
     user_profile = users.get(user_email)
-    if not user_profile or not user_profile.get('verified'):
-        return jsonify({'error': 'Please verify your email before commenting.'}), 403
+    if not user_profile:
+        return jsonify({'error': 'User not found.'}), 403
 
     payload = request.get_json(force=True)
     text = (payload.get('text') or '').strip()
@@ -670,8 +670,8 @@ def vote_comment(champ_name, comment_id):
 
     user_email = session['email']
     user_profile = users.get(user_email)
-    if not user_profile or not user_profile.get('verified'):
-        return jsonify({'error': 'Please verify your email before voting on comments.'}), 403
+    if not user_profile:
+        return jsonify({'error': 'User not found.'}), 403
 
     payload = request.get_json(force=True)
     direction = payload.get('direction')
@@ -835,12 +835,11 @@ def register():
                 return redirect(url_for('register'))
 
         hashed_password = generate_password_hash(password)
-        verification_token = str(uuid.uuid4())
 
         users[email] = {
             'password': hashed_password,
-            'verified': False,
-            'token': verification_token,
+            'verified': True,
+            'token': '',
             'username': username,
             'main_champion': '',
             'favorite_champion': '',
@@ -851,23 +850,15 @@ def register():
         }
         save_users(users)
 
-        print(f"Verification link (fake): http://localhost:8080/verify_email/{verification_token}")
-
-        flash('Registration successful! Check your email to verify your account before voting.')
+        flash('Registration successful! You can log in now.')
         return redirect(url_for('login'))
 
     return render_template('register.html')
 
 @app.route('/verify_email/<token>')
 def verify_email(token):
-    for email, user in users.items():
-        if user.get('token') == token:
-            user['verified'] = True
-            user['token'] = ''
-            save_users(users)
-            flash('Email verified! You can now log in.')
-            return redirect(url_for('login'))
-    return "Invalid or expired token", 400
+    flash('Email verification is not required. Please log in to continue.')
+    return redirect(url_for('login'))
 
 
 @app.route('/forgot_password', methods=['GET', 'POST'])
@@ -928,10 +919,6 @@ def login():
         user = users.get(email)
         if not user:
             flash('Invalid email or password.')
-            return redirect(url_for('login'))
-
-        if not user.get('verified'):
-            flash('Please verify your email before logging in.')
             return redirect(url_for('login'))
 
         if not check_password_hash(user['password'], password):

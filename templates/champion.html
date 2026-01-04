@@ -46,11 +46,11 @@
             <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ 'Saved ❤️' if vote_data.favorite else 'Save ❤️' }}</button>
           </div>
         </div>
-        <div class="skin-card__actions">
-          <a class="skin-link" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query={{ champ_name | urlencode }}+{{ skin.skin_name | urlencode }}+SkinSpotlights">
-            ▶️ Preview
-          </a>
-        </div>
+          <div class="skin-card__actions">
+            <a class="skin-link" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query={{ champ_name | urlencode }}+{{ skin.skin_name | urlencode }}+SkinSpotlights">
+              <span aria-hidden="true" class="icon">▶</span> Preview
+            </a>
+          </div>
       </article>
     {% endfor %}
   </div>
@@ -190,7 +190,7 @@
       {% endif %}
     </div>
     {% if not session.email %}
-      <div class="panel__cta">Sign in and verify your email to comment.</div>
+      <div class="panel__cta">Sign in with your email to comment.</div>
     {% endif %}
   </div>
 

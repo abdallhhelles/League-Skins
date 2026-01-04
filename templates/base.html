@@ -28,7 +28,6 @@
       <a href="{{ url_for('index') }}">Champions</a>
       <a href="{{ url_for('top_skins') }}">Top voted</a>
       <a href="{{ url_for('about_page') }}">About</a>
-      <a href="{{ url_for('legal') }}">Legal</a>
       <a href="{{ url_for('contact') }}">Contact</a>
       {% if session.email == ADMIN_EMAIL %}
         <a href="{{ url_for('admin_dashboard') }}">Admin</a>
@@ -63,15 +62,15 @@
 
   <footer class="site-footer">
     <div class="footer-main">
-      <div>
-        Built for League fans. Artwork and champion data are property of Riot Games.
-        <a class="bmc" href="https://buymeacoffee.com/akrot" target="_blank" rel="noopener">Buy me a coffee</a>
+      <div class="footer-brand">
+        <strong>League of Skins</strong> — community rankings for every champion skin.
       </div>
-      <div class="footer-links">
-        <a href="{{ url_for('legal') }}">Terms, Privacy & Cookies</a>
-        <a href="{{ url_for('about_page') }}">How it works</a>
-        <a href="{{ url_for('contact') }}">Contact</a>
-      </div>
+      <div class="footer-meta">© {{ current_year }} League of Skins. All rights reserved. Not affiliated with Riot Games; art &amp; trademarks belong to Riot Games.</div>
+    </div>
+    <div class="footer-links">
+      <a href="{{ url_for('legal') }}">Terms &amp; Privacy</a>
+      <a href="{{ url_for('about_page') }}">How it works</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
     </div>
   </footer>
   <div class="cookie-bar" id="cookie-bar" hidden>
@@ -86,7 +85,7 @@
   <script>
     const toggle = document.getElementById('theme-toggle');
     const root = document.documentElement;
-    const themeLabel = () => root.classList.contains('theme-light') ? '☀️ Light' : '🌙 Dark';
+    const themeLabel = () => root.classList.contains('theme-light') ? 'Light mode' : 'Dark mode';
 
     if (toggle) {
       toggle.textContent = themeLabel();
@@ -103,18 +102,20 @@
 
     const consent = localStorage.getItem('cookieConsent');
     if (cookieBar && !consent) {
-      cookieBar.hidden = false;
+      cookieBar.removeAttribute('hidden');
       cookieBar.classList.add('is-visible');
     }
     cookieAccept?.addEventListener('click', () => {
       localStorage.setItem('cookieConsent', 'accepted');
       cookieBar?.classList.remove('is-visible');
-      if (cookieBar) cookieBar.hidden = true;
+      cookieBar?.setAttribute('aria-hidden', 'true');
+      cookieBar?.remove();
     });
     cookieDecline?.addEventListener('click', () => {
       localStorage.setItem('cookieConsent', 'declined');
       cookieBar?.classList.remove('is-visible');
-      if (cookieBar) cookieBar.hidden = true;
+      cookieBar?.setAttribute('aria-hidden', 'true');
+      cookieBar?.remove();
     });
   </script>
 </body>
