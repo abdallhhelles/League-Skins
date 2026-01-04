@@ -8,6 +8,7 @@ A Flask web experience for browsing League of Legends champions, previewing ever
 - **Search & filtering**: Browse champions, view skin details, open modal splash previews, and jump to YouTube gameplay searches for any skin ("Champion SkinName SkinSpotlights").
 - **Responsive Riot-inspired UI**: Shared layout, hero sections, modal previews, and cohesive light/dark themes with a user toggle.
 - **Account management**: Registration with public usernames, login, email verification gating, and session-based access control for voting.
+- **Password recovery**: Self-service password reset flow that emails a one-time link to verified addresses.
 - **Player profiles**: Public usernames with private emails, selectable main champion, and personal favorites gallery.
 - **Static JSON storage**: Votes, users, comments, favorites, and feedback are stored as JSON for simple deployments without a database.
 - **Admin testing account**: Pre-provisioned admin user for quick QA (see below).
@@ -76,7 +77,8 @@ python lol_splash_downloader/splash_art_update.py
 10. **Contact & feedback** – Submit both forms and confirm entries appear in the admin dashboard inbox.
 11. **Skin videos** – Open a champion page, click "Watch gameplay" on a skin, and verify YouTube opens with a `Champion SkinName SkinSpotlights` search.
 12. **Theme toggle** – Switch between light and dark modes with the header toggle and reload to confirm persistence.
-13. **Responsive UI** – Resize the browser (mobile/tablet/desktop) and ensure grids/cards adapt.
+13. **Password reset** – From the login page, request a reset, follow the printed link, and confirm the password updates.
+14. **Responsive UI** – Resize the browser (mobile/tablet/desktop) and ensure grids/cards adapt.
 
 ## Deployment checklist (public release)
 - Set `FLASK_SECRET_KEY`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` to production values.

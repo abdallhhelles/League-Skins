@@ -87,13 +87,14 @@ def inject_globals():
     return {"ADMIN_EMAIL": ADMIN_EMAIL, "users": users}
 
 
-def reset_votes():
+def reset_votes(log_message=False):
     """Clear all votes for a fresh launch or environment reset."""
 
     global votes
     votes = {}
     save_votes(votes)
-    print("All votes have been reset for a clean start.")
+    if log_message:
+        print("All votes have been reset for a clean start.")
 
 
 def backup_votes():
@@ -122,6 +123,7 @@ def ensure_admin_user():
             'username': 'Admin',
             'main_champion': '',
             'favorites': [],
+            'reset_token': '',
         }
         save_users(users)
         print(f"Provisioned admin account: {ADMIN_EMAIL}")
@@ -132,6 +134,7 @@ def ensure_admin_user():
         admin_profile.setdefault('username', 'Admin')
         admin_profile.setdefault('main_champion', '')
         admin_profile.setdefault('favorites', [])
+        admin_profile.setdefault('reset_token', '')
         save_users(users)
         print(f"Verified admin account: {ADMIN_EMAIL}")
 
@@ -149,6 +152,9 @@ def hydrate_user_profiles():
             changed = True
         if 'favorites' not in profile:
             profile['favorites'] = []
+            changed = True
+        if 'reset_token' not in profile:
+            profile['reset_token'] = ''
             changed = True
     if changed:
         save_users(users)
@@ -430,14 +436,14 @@ def admin_reset_votes():
         return redirect(url_for('admin_dashboard'))
 
     backup_path = backup_votes()
-    reset_votes()
+    reset_votes(log_message=True)
     session.pop('vote_reset_token', None)
     flash(f'Votes reset. Backup saved to {backup_path}.')
     return redirect(url_for('admin_dashboard'))
 
 
-@app.route('/about')
-def about():
+@app.route('/about', endpoint='about_page')
+def about_page():
     return render_template('about.html')
 
 
@@ -746,6 +752,7 @@ def register():
             'username': username,
             'main_champion': '',
             'favorites': [],
+            'reset_token': '',
         }
         save_users(users)
 
@@ -766,6 +773,56 @@ def verify_email(token):
             flash('Email verified! You can now log in.')
             return redirect(url_for('login'))
     return "Invalid or expired token", 400
+
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = (request.form.get('email') or '').lower().strip()
+
+        user = users.get(email)
+        if user:
+            reset_token = str(uuid.uuid4())
+            user['reset_token'] = reset_token
+            save_users(users)
+            print(f"Password reset link (fake): http://localhost:8080/reset_password/{reset_token}")
+
+        flash('If the email exists, a reset link has been sent.')
+        return redirect(url_for('forgot_password'))
+
+    return render_template('forgot_password.html')
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    target_email = None
+    for email, profile in users.items():
+        if profile.get('reset_token') == token:
+            target_email = email
+            break
+
+    if not target_email:
+        return "Invalid or expired reset link", 400
+
+    if request.method == 'POST':
+        password = request.form.get('password', '')
+        confirm = request.form.get('password_confirm', '')
+
+        if not password or not confirm:
+            flash('Please fill all fields.')
+            return redirect(url_for('reset_password', token=token))
+
+        if password != confirm:
+            flash('Passwords do not match.')
+            return redirect(url_for('reset_password', token=token))
+
+        users[target_email]['password'] = generate_password_hash(password)
+        users[target_email]['reset_token'] = ''
+        save_users(users)
+        flash('Password updated. You can log in now.')
+        return redirect(url_for('login'))
+
+    return render_template('reset_password.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
