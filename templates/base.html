@@ -21,6 +21,9 @@
       <a href="{{ url_for('top_skins') }}">Top voted</a>
       <a href="{{ url_for('about') }}">About</a>
       <a href="{{ url_for('legal') }}">Legal</a>
+      {% if session.email == ADMIN_EMAIL %}
+        <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+      {% endif %}
     </nav>
     <div class="auth">
       {% if session.email %}

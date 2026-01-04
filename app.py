@@ -15,6 +15,7 @@ RESET_VOTES_ON_START = os.environ.get('RESET_VOTES_ON_START', 'true').lower() ==
 
 USERS_DB_FILE = 'users_db.json'
 VOTES_DB_FILE = 'votes_db.json'  # Store votes per skin, including who voted
+COMMENTS_DB_FILE = 'comments_db.json'
 
 def load_users():
     if not os.path.exists(USERS_DB_FILE):
@@ -41,9 +42,29 @@ def save_votes(votes):
     with open(VOTES_DB_FILE, 'w') as f:
         json.dump(votes, f, indent=4)
 
+
+def load_comments():
+    if not os.path.exists(COMMENTS_DB_FILE):
+        with open(COMMENTS_DB_FILE, 'w') as f:
+            json.dump({}, f)
+        return {}
+    with open(COMMENTS_DB_FILE, 'r') as f:
+        return json.load(f)
+
+
+def save_comments(comments):
+    with open(COMMENTS_DB_FILE, 'w') as f:
+        json.dump(comments, f, indent=4)
+
 # Load users and votes into memory
 users = load_users()
 votes = load_votes()
+comments = load_comments()
+
+
+@app.context_processor
+def inject_globals():
+    return {"ADMIN_EMAIL": ADMIN_EMAIL}
 
 
 def reset_votes():
@@ -128,11 +149,24 @@ def compute_site_stats(all_champions):
     total_champions = len(all_champions)
     total_skins = sum(len(skins) for skins in all_champions.values())
     total_votes = sum(entry.get("count", 0) for entry in votes.values())
+    total_comments = sum(len(comment_list) for comment_list in comments.values())
     return {
         "champions": total_champions,
         "skins": total_skins,
         "votes": total_votes,
+        "comments": total_comments,
     }
+
+
+def compute_user_karma(user_email):
+    score = 0
+    for champ_comments in comments.values():
+        for comment in champ_comments:
+            if comment.get("author") == user_email:
+                upvotes = len(comment.get("upvoters", []))
+                downvotes = len(comment.get("downvoters", []))
+                score += upvotes - downvotes
+    return score
 
 
 def top_voted_skins(all_champions, limit=20):
@@ -178,6 +212,7 @@ def champion_page(champ_name):
         return "Champion not found", 404
 
     user_email = session.get('email')
+    user_karma = compute_user_karma(user_email) if user_email else 0
 
     champ_votes = {}
     for skin in champ_skins:
@@ -189,7 +224,23 @@ def champion_page(champ_name):
             "voted": voted
         }
 
-    return render_template('champion.html', champ_name=champ_name, skins=champ_skins, user=user_email, champ_votes=champ_votes)
+    champ_comments = comments.get(champ_name, [])
+    # Sort comments by karma then recency
+    sorted_comments = sorted(
+        champ_comments,
+        key=lambda c: (len(c.get("upvoters", [])) - len(c.get("downvoters", [])), c.get("created_at", "")),
+        reverse=True,
+    )
+
+    return render_template(
+        'champion.html',
+        champ_name=champ_name,
+        skins=champ_skins,
+        user=user_email,
+        champ_votes=champ_votes,
+        comments=sorted_comments,
+        karma=user_karma,
+    )
 
 
 @app.route('/top')
@@ -198,6 +249,41 @@ def top_skins():
     stats = compute_site_stats(all_champions)
     leaderboard = top_voted_skins(all_champions, limit=30)
     return render_template('top.html', leaderboard=leaderboard, stats=stats)
+
+
+@app.route('/admin')
+def admin_dashboard():
+    user_email = session.get('email')
+    if user_email != ADMIN_EMAIL:
+        flash('Admin access required.')
+        return redirect(url_for('login'))
+
+    all_champions = load_all_skins()
+    stats = compute_site_stats(all_champions)
+
+    total_users = len(users)
+    verified_users = sum(1 for profile in users.values() if profile.get('verified'))
+    champion_comment_totals = {
+        champ: len(comment_list) for champ, comment_list in comments.items()
+    }
+    karma_board = [
+        {
+            "email": email,
+            "karma": compute_user_karma(email),
+            "verified": profile.get('verified'),
+        }
+        for email, profile in users.items()
+    ]
+    karma_board.sort(key=lambda entry: entry["karma"], reverse=True)
+
+    return render_template(
+        'admin.html',
+        stats=stats,
+        total_users=total_users,
+        verified_users=verified_users,
+        champion_comment_totals=champion_comment_totals,
+        karma_board=karma_board,
+    )
 
 
 @app.route('/about')
@@ -251,6 +337,93 @@ def vote_skin(champ_name, skin_id):
     save_votes(votes)
 
     return jsonify({'votes': skin_vote_data["count"]})
+
+
+@app.route('/comment/<champ_name>', methods=['POST'])
+def add_comment(champ_name):
+    if 'email' not in session:
+        return jsonify({'error': 'You must be logged in to comment.'}), 401
+
+    user_email = session['email']
+    user_profile = users.get(user_email)
+    if not user_profile or not user_profile.get('verified'):
+        return jsonify({'error': 'Please verify your email before commenting.'}), 403
+
+    payload = request.get_json(force=True)
+    text = (payload.get('text') or '').strip()
+
+    if not text:
+        return jsonify({'error': 'Comment cannot be empty.'}), 400
+
+    new_comment = {
+        "id": str(uuid.uuid4()),
+        "author": user_email,
+        "text": text,
+        "upvoters": [],
+        "downvoters": [],
+        "created_at": uuid.uuid1().hex,
+    }
+
+    champ_comments = comments.setdefault(champ_name, [])
+    champ_comments.append(new_comment)
+    save_comments(comments)
+
+    return jsonify({
+        'id': new_comment['id'],
+        'author': user_email,
+        'text': text,
+        'upvotes': 0,
+        'downvotes': 0,
+        'score': 0,
+    }), 201
+
+
+@app.route('/comment/<champ_name>/<comment_id>/vote', methods=['POST'])
+def vote_comment(champ_name, comment_id):
+    if 'email' not in session:
+        return jsonify({'error': 'You must be logged in to vote on comments.'}), 401
+
+    user_email = session['email']
+    user_profile = users.get(user_email)
+    if not user_profile or not user_profile.get('verified'):
+        return jsonify({'error': 'Please verify your email before voting on comments.'}), 403
+
+    payload = request.get_json(force=True)
+    direction = payload.get('direction')
+
+    if direction not in ['up', 'down']:
+        return jsonify({'error': 'Invalid vote direction.'}), 400
+
+    champ_comments = comments.get(champ_name, [])
+    comment = next((c for c in champ_comments if c.get('id') == comment_id), None)
+    if not comment:
+        return jsonify({'error': 'Comment not found.'}), 404
+
+    # Remove from opposite direction if present
+    if direction == 'up':
+        if user_email in comment.get('upvoters', []):
+            return jsonify({'error': 'You already upvoted this comment.'}), 400
+        if user_email in comment.get('downvoters', []):
+            comment['downvoters'].remove(user_email)
+        comment.setdefault('upvoters', []).append(user_email)
+    else:
+        if user_email in comment.get('downvoters', []):
+            return jsonify({'error': 'You already downvoted this comment.'}), 400
+        if user_email in comment.get('upvoters', []):
+            comment['upvoters'].remove(user_email)
+        comment.setdefault('downvoters', []).append(user_email)
+
+    save_comments(comments)
+
+    upvotes = len(comment.get('upvoters', []))
+    downvotes = len(comment.get('downvoters', []))
+    score = upvotes - downvotes
+
+    return jsonify({
+        'upvotes': upvotes,
+        'downvotes': downvotes,
+        'score': score,
+    })
 
 
 

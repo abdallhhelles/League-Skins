@@ -10,7 +10,9 @@ A Flask web experience for browsing League of Legends champions, previewing ever
 - **Account management**: Registration, login, email verification gating, and session-based access control for voting.
 - **Static JSON storage**: Votes and users are stored as JSON for simple deployments without a database.
 - **Admin testing account**: Pre-provisioned admin user for quick QA (see below).
-- **Leaderboard & stats**: Dedicated top-voted page plus sitewide champion/skin/vote counts for quick health checks.
+- **Leaderboard & stats**: Dedicated top-voted page plus sitewide champion/skin/vote/comment counts for quick health checks.
+- **Comments with karma**: Champion threads with up/down voting per comment and author karma totals.
+- **Admin dashboard**: Stats, verification mix, comment volume, and karma leaderboard for the operations account.
 
 ## Quickstart
 1. Create and activate a virtual environment, then install dependencies:
@@ -30,7 +32,7 @@ A Flask web experience for browsing League of Legends champions, previewing ever
    ```bash
    python app.py
    ```
-4. Open http://localhost:8080 to browse, vote, and view About/Legal/Top pages.
+4. Open http://localhost:8080 to browse, vote, comment, and view About/Legal/Top/Admin pages.
 5. By default, votes reset on each start for clean testing; set `RESET_VOTES_ON_START=false` to retain history.
 
 ## Admin/testing account
@@ -61,14 +63,18 @@ python lol_splash_downloader/splash_art_update.py
 4. **Voting flow** –
    - Navigate to a champion page, open a skin, cast a vote with a verified account.
    - Attempt a second vote on the same skin (expect a "You already voted" error).
-5. **Data persistence** – If `RESET_VOTES_ON_START=false`, restart the server and verify votes persist via `votes_db.json`.
-6. **Content pages** – Visit `/about` and `/legal` to confirm copy renders.
-7. **Responsive UI** – Resize the browser (mobile/tablet/desktop) and ensure grids/cards adapt.
+5. **Comments + karma** –
+   - Add comments on a champion as a verified user, then up/down vote from another verified account.
+   - Confirm scores update and karma totals change for the author.
+6. **Admin dashboard** – Visit `/admin` with the admin user to confirm stats populate, comment counts render, and karma leaderboard orders correctly.
+7. **Data persistence** – If `RESET_VOTES_ON_START=false`, restart the server and verify votes persist via `votes_db.json` and comments via `comments_db.json`.
+8. **Content pages** – Visit `/about` and `/legal` to confirm copy renders.
+9. **Responsive UI** – Resize the browser (mobile/tablet/desktop) and ensure grids/cards adapt.
 
 ## Deployment checklist (public release)
 - Set `FLASK_SECRET_KEY`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` to production values.
 - Run the app behind HTTPS with a reverse proxy (e.g., Nginx/Fly.io/Render) and disable debug mode.
-- Pre-seed or mount persistent storage for `static/splash_arts/`, `users_db.json`, and `votes_db.json`.
+- Pre-seed or mount persistent storage for `static/splash_arts/`, `users_db.json`, `votes_db.json`, and `comments_db.json`.
 - Monitor startup logs for splash sync errors; rerun the sync script if needed.
 - Review About/Legal copy for regional/legal requirements and Riot attribution.
 
