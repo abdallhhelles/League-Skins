@@ -7,6 +7,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script>
+    (() => {
+      const stored = localStorage.getItem('theme') || 'dark';
+      const body = document.documentElement;
+      body.classList.toggle('theme-light', stored === 'light');
+    })();
+  </script>
 </head>
 <body>
   <header class="site-header">
@@ -18,12 +25,20 @@
     </div>
     <nav class="site-nav">
       <a href="{{ url_for('index') }}">Champions</a>
+      <a href="{{ url_for('top_skins') }}">Top voted</a>
       <a href="{{ url_for('about') }}">About</a>
       <a href="{{ url_for('legal') }}">Legal</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+      <a href="{{ url_for('feedback') }}">Feedback</a>
+      {% if session.email == ADMIN_EMAIL %}
+        <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+      {% endif %}
     </nav>
     <div class="auth">
+      <button class="button ghost toggle" id="theme-toggle" type="button" aria-label="Toggle theme">🌓</button>
       {% if session.email %}
-        <div class="welcome">Hi, {{ session.email.split('@')[0] }}</div>
+        <div class="welcome">Hi, {{ users[session.email].username if session.email in users else session.email.split('@')[0] }}</div>
+        <a class="button ghost" href="{{ url_for('profile') }}">Profile</a>
         <a class="button ghost" href="{{ url_for('logout') }}">Logout</a>
       {% else %}
         <a class="button ghost" href="{{ url_for('login') }}">Log in</a>
@@ -51,9 +66,18 @@
       Built for League fans. Artwork and champion data are property of Riot Games.
     </div>
     <div class="footer-links">
-      <a href="{{ url_for('legal') }}">Terms & Privacy</a>
+      <a href="{{ url_for('legal') }}">Terms, Privacy & Cookies</a>
       <a href="{{ url_for('about') }}">How it works</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
     </div>
   </footer>
+  <script>
+    const toggle = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+    toggle?.addEventListener('click', () => {
+      const isLight = root.classList.toggle('theme-light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+  </script>
 </body>
 </html>

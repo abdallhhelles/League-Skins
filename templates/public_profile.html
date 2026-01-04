@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile.username }}'s profile | League Skins Vote{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Summoner profile</p>
+    <h1>{{ profile.username }}</h1>
+    <p class="lede">Main champion: {{ profile.main_champion or 'Not set' }}</p>
+  </div>
+  <div class="breadcrumb">
+    <a href="{{ url_for('index') }}">Home</a>
+    <span aria-hidden="true">/</span>
+    <span>Profile</span>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Favorites</p>
+      <h2>{{ favorites|length }} skins</h2>
+    </div>
+  </div>
+  <div class="skins-grid">
+    {% for fav in favorites %}
+      <article class="skin-card">
+        <div class="skin-card__image" style="background-image:url('{{ url_for('static', filename=fav.file_path) }}');"></div>
+        <div class="skin-card__body">
+          <div>
+            <p class="eyebrow">{{ fav.champion }}</p>
+            <h3 class="skin-card__title">{{ fav.skin_name }}</h3>
+          </div>
+          <a class="button ghost" href="{{ url_for('champion_page', champ_name=fav.champion) }}">View champion</a>
+        </div>
+      </article>
+    {% else %}
+      <p class="muted">No favorites yet.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

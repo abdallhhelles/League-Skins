@@ -27,7 +27,7 @@
 
   <div class="skins-grid" id="skins-container">
     {% for skin in skins %}
-      {% set vote_data = champ_votes.get(skin.skin_num, {'count': 0, 'voted': False}) %}
+      {% set vote_data = champ_votes.get(skin.skin_num, {'count': 0, 'voted': False, 'favorite': False}) %}
       <article class="skin-card" data-skin-id="{{ skin.skin_num }}" data-champ-name="{{ champ_name }}">
         <button class="skin-card__image" style="background-image:url('{{ url_for('static', filename=skin.file_path) }}');" aria-label="View {{ skin.skin_name }} splash" data-modal-src="{{ url_for('static', filename=skin.file_path) }}"></button>
         <div class="skin-card__body">
@@ -40,7 +40,14 @@
               ❤
             </button>
             <div class="vote__count" id="vote-count-{{ skin.skin_num }}">{{ vote_data.count }}</div>
+            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ '★' if vote_data.favorite else '☆' }}</button>
           </div>
+        </div>
+        <div class="skin-card__actions">
+          <a class="skin-link" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query={{ champ_name | urlencode }}+{{ skin.skin_name | urlencode }}+SkinSpotlights">
+            ▶ Watch gameplay
+          </a>
+          <div class="muted">Opens a YouTube search in a new tab</div>
         </div>
       </article>
     {% endfor %}
@@ -60,6 +67,7 @@
   const modal = document.getElementById('modal');
   const modalImg = document.getElementById('modal-img');
   const closeModalBtn = modal.querySelector('.modal__close');
+  const champSlug = encodeURIComponent('{{ champ_name }}');
 
   function sortSkins() {
     const cards = Array.from(skinsContainer.children);
@@ -99,6 +107,31 @@
     });
   });
 
+  skinsContainer.querySelectorAll('.favorite__button').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const card = e.target.closest('.skin-card');
+      const skinId = card.dataset.skinId;
+      const champName = card.dataset.champName;
+
+      try {
+        const response = await fetch(`/favorite/${encodeURIComponent(champName)}/${encodeURIComponent(skinId)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          alert(data.error || 'Unable to update favorite.');
+          return;
+        }
+        const isAdded = data.status === 'added';
+        btn.dataset.favorite = isAdded ? 'true' : 'false';
+        btn.textContent = isAdded ? '★' : '☆';
+      } catch (err) {
+        alert('Network error while updating favorite.');
+      }
+    });
+  });
+
   document.querySelectorAll('.skin-card__image').forEach(trigger => {
     trigger.addEventListener('click', () => {
       modalImg.src = trigger.dataset.modalSrc;
@@ -120,5 +153,126 @@
   });
 
   sortSkins();
+</script>
+
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Comments</p>
+      <h2>Discuss and react</h2>
+      {% if session.email %}
+        <p class="lede">You have <strong>{{ karma }}</strong> karma from community votes.</p>
+      {% endif %}
+    </div>
+    {% if not session.email %}
+      <div class="panel__cta">Sign in and verify your email to comment.</div>
+    {% endif %}
+  </div>
+
+  {% if session.email %}
+    <form class="comment-form" id="comment-form">
+      <label for="comment-text" class="eyebrow">Add a comment</label>
+      <textarea id="comment-text" name="comment" rows="3" placeholder="Share your take on these skins" required></textarea>
+      <button type="submit" class="button primary">Post comment</button>
+    </form>
+  {% endif %}
+
+  <div id="comment-list" class="comment-list">
+    {% for comment in comments %}
+      <article class="comment" data-comment-id="{{ comment.id }}">
+        <div class="comment__header">
+          <div class="comment__author">{{ comment.display_name }}</div>
+          <div class="comment__meta">Karma: <span class="comment__score">{{ comment.upvoters|length - comment.downvoters|length }}</span></div>
+        </div>
+        <p>{{ comment.text }}</p>
+        <div class="comment__actions">
+          <button class="comment__vote" data-direction="up">▲ {{ comment.upvoters|length }}</button>
+          <button class="comment__vote" data-direction="down">▼ {{ comment.downvoters|length }}</button>
+        </div>
+      </article>
+    {% else %}
+      <p class="muted">No comments yet. Start the conversation.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<script>
+  const commentForm = document.getElementById('comment-form');
+  const commentList = document.getElementById('comment-list');
+
+  if (commentForm) {
+    commentForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const textArea = document.getElementById('comment-text');
+      const text = textArea.value.trim();
+      if (!text) return;
+
+      try {
+        const response = await fetch(`/comment/${champSlug}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          alert(data.error || 'Unable to post comment.');
+          return;
+        }
+
+        const article = document.createElement('article');
+        article.className = 'comment';
+        article.dataset.commentId = data.id;
+        article.innerHTML = `
+          <div class="comment__header">
+            <div class="comment__author">${data.display_name || data.author}</div>
+            <div class="comment__meta">Karma: <span class="comment__score">${data.score}</span></div>
+          </div>
+          <p>${data.text}</p>
+          <div class="comment__actions">
+            <button class="comment__vote" data-direction="up">▲ ${data.upvotes}</button>
+            <button class="comment__vote" data-direction="down">▼ ${data.downvotes}</button>
+          </div>
+        `;
+
+        commentList.prepend(article);
+        textArea.value = '';
+      } catch (err) {
+        alert('Network error while posting comment.');
+      }
+    });
+  }
+
+  commentList?.addEventListener('click', async (e) => {
+    const voteBtn = e.target.closest('.comment__vote');
+    if (!voteBtn) return;
+
+    const direction = voteBtn.dataset.direction;
+    const comment = voteBtn.closest('.comment');
+    const commentId = comment.dataset.commentId;
+
+    try {
+      const response = await fetch(`/comment/${champSlug}/${commentId}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ direction })
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.error || 'Unable to register vote.');
+        return;
+      }
+
+      const [upBtn, downBtn] = comment.querySelectorAll('.comment__vote');
+      if (upBtn && downBtn) {
+        upBtn.textContent = `▲ ${data.upvotes}`;
+        downBtn.textContent = `▼ ${data.downvotes}`;
+      }
+      const scoreEl = comment.querySelector('.comment__score');
+      if (scoreEl) scoreEl.textContent = data.score;
+    } catch (err) {
+      alert('Network error while voting on comment.');
+    }
+  });
 </script>
 {% endblock %}
