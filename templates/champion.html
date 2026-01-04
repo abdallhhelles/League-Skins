@@ -1,16 +1,33 @@
 {% extends 'base.html' %}
-{% block title %}{{ champ_name }} skins | League Skins Vote{% endblock %}
+{% block title %}{{ champ_name }} skins | League of Skins{% endblock %}
 {% block content %}
 <section class="page-header">
   <div>
     <p class="eyebrow">{{ champ_name }}</p>
     <h1>Rank every skin by community vote.</h1>
     <p class="lede">Click a splash to view it in detail. Sign in to cast a single vote per skin and watch rankings reorder instantly.</p>
+    {% if champion_lore %}
+      <p class="muted" style="max-width: 720px;">{{ champion_lore }}</p>
+    {% endif %}
   </div>
   <div class="breadcrumb">
     <a href="{{ url_for('index') }}">Champions</a>
     <span aria-hidden="true">/</span>
     <span>{{ champ_name }}</span>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Quick jump</p>
+      <h2>Navigate skins faster</h2>
+    </div>
+  </div>
+  <div class="pill-list" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
+    {% for skin in skins %}
+      <button class="pill" data-scroll-target="skin-{{ skin.skin_num }}">{{ skin.skin_name }}</button>
+    {% endfor %}
   </div>
 </section>
 
@@ -28,7 +45,7 @@
   <div class="skins-grid" id="skins-container">
     {% for skin in skins %}
       {% set vote_data = champ_votes.get(skin.skin_num, {'count': 0, 'voted': False, 'favorite': False}) %}
-      <article class="skin-card" data-skin-id="{{ skin.skin_num }}" data-champ-name="{{ champ_name }}">
+      <article class="skin-card" id="skin-{{ skin.skin_num }}" data-skin-id="{{ skin.skin_num }}" data-champ-name="{{ champ_name }}">
         <button class="skin-card__image" style="background-image:url('{{ url_for('static', filename=skin.file_path) }}');" aria-label="View {{ skin.skin_name }} splash" data-modal-src="{{ url_for('static', filename=skin.file_path) }}"></button>
         <div class="skin-card__body">
           <div>
@@ -37,15 +54,15 @@
           </div>
           <div class="vote">
             <button class="vote__button" {% if vote_data.voted %}disabled{% endif %}>
-              ❤
+              {{ 'Voted' if vote_data.voted else 'Vote' }}
             </button>
             <div class="vote__count" id="vote-count-{{ skin.skin_num }}">{{ vote_data.count }}</div>
-            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ '★' if vote_data.favorite else '☆' }}</button>
+            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ 'Saved' if vote_data.favorite else 'Save' }}</button>
           </div>
         </div>
         <div class="skin-card__actions">
           <a class="skin-link" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query={{ champ_name | urlencode }}+{{ skin.skin_name | urlencode }}+SkinSpotlights">
-            ▶ Watch gameplay
+            <span class="play-icon" aria-hidden="true"></span> Preview
           </a>
           <div class="muted">Opens a YouTube search in a new tab</div>
         </div>
@@ -57,7 +74,11 @@
 <div id="modal" aria-hidden="true" class="modal">
   <div class="modal__overlay"></div>
   <div class="modal__content">
-    <button class="modal__close" aria-label="Close preview">×</button>
+    <button class="modal__close" aria-label="Close preview">Close</button>
+    <div class="modal__nav">
+      <button type="button" class="button ghost" id="modal-prev">Previous</button>
+      <button type="button" class="button ghost" id="modal-next">Next</button>
+    </div>
     <img src="" alt="Skin preview" id="modal-img" />
   </div>
 </div>
@@ -68,6 +89,10 @@
   const modalImg = document.getElementById('modal-img');
   const closeModalBtn = modal.querySelector('.modal__close');
   const champSlug = encodeURIComponent('{{ champ_name }}');
+  const modalNext = document.getElementById('modal-next');
+  const modalPrev = document.getElementById('modal-prev');
+  const skinButtons = Array.from(document.querySelectorAll('.skin-card'));
+  let activeIndex = -1;
 
   function sortSkins() {
     const cards = Array.from(skinsContainer.children);
@@ -125,7 +150,7 @@
         }
         const isAdded = data.status === 'added';
         btn.dataset.favorite = isAdded ? 'true' : 'false';
-        btn.textContent = isAdded ? '★' : '☆';
+        btn.textContent = isAdded ? 'Saved' : 'Save';
       } catch (err) {
         alert('Network error while updating favorite.');
       }
@@ -137,6 +162,7 @@
       modalImg.src = trigger.dataset.modalSrc;
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
+      activeIndex = skinButtons.findIndex(card => card.contains(trigger));
     });
   });
 
@@ -150,6 +176,28 @@
   modal.querySelector('.modal__overlay').addEventListener('click', closeModal);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
+    if (e.key === 'ArrowRight') stepModal(1);
+    if (e.key === 'ArrowLeft') stepModal(-1);
+  });
+
+  function stepModal(delta) {
+    if (activeIndex === -1) return;
+    activeIndex = (activeIndex + delta + skinButtons.length) % skinButtons.length;
+    const target = skinButtons[activeIndex].querySelector('.skin-card__image');
+    if (target) {
+      modalImg.src = target.dataset.modalSrc;
+    }
+  }
+
+  modalNext?.addEventListener('click', () => stepModal(1));
+  modalPrev?.addEventListener('click', () => stepModal(-1));
+
+  document.querySelectorAll('[data-scroll-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.scrollTarget;
+      const target = document.getElementById(targetId);
+      target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   });
 
   sortSkins();
@@ -186,8 +234,8 @@
         </div>
         <p>{{ comment.text }}</p>
         <div class="comment__actions">
-          <button class="comment__vote" data-direction="up">▲ {{ comment.upvoters|length }}</button>
-          <button class="comment__vote" data-direction="down">▼ {{ comment.downvoters|length }}</button>
+          <button class="comment__vote" data-direction="up">Upvote {{ comment.upvoters|length }}</button>
+          <button class="comment__vote" data-direction="down">Downvote {{ comment.downvoters|length }}</button>
         </div>
       </article>
     {% else %}
@@ -230,8 +278,8 @@
           </div>
           <p>${data.text}</p>
           <div class="comment__actions">
-            <button class="comment__vote" data-direction="up">▲ ${data.upvotes}</button>
-            <button class="comment__vote" data-direction="down">▼ ${data.downvotes}</button>
+            <button class="comment__vote" data-direction="up">Upvote ${data.upvotes}</button>
+            <button class="comment__vote" data-direction="down">Downvote ${data.downvotes}</button>
           </div>
         `;
 
@@ -265,8 +313,8 @@
 
       const [upBtn, downBtn] = comment.querySelectorAll('.comment__vote');
       if (upBtn && downBtn) {
-        upBtn.textContent = `▲ ${data.upvotes}`;
-        downBtn.textContent = `▼ ${data.downvotes}`;
+        upBtn.textContent = `Upvote ${data.upvotes}`;
+        downBtn.textContent = `Downvote ${data.downvotes}`;
       }
       const scoreEl = comment.querySelector('.comment__score');
       if (scoreEl) scoreEl.textContent = data.score;

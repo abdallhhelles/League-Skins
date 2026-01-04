@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="League of Skins icon">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6e27a"/>
+      <stop offset="50%" stop-color="#f1c152"/>
+      <stop offset="100%" stop-color="#c4933f"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="12" fill="#0c0c12"/>
+  <circle cx="32" cy="32" r="24" fill="url(#gold)" opacity="0.9"/>
+  <path d="M22 22h8l-4 20h-8z" fill="#0c0c12" opacity="0.95"/>
+  <path d="M34 22h8l-4 20h-8z" fill="#0c0c12" opacity="0.85"/>
+  <circle cx="28" cy="20" r="3" fill="#0c0c12"/>
+  <circle cx="40" cy="20" r="3" fill="#0c0c12"/>
+</svg>
