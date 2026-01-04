@@ -46,8 +46,7 @@
     <h2>User quality</h2>
     <ul class="pill-list">
       <li><strong>{{ total_users }}</strong> total users</li>
-      <li><strong>{{ verified_users }}</strong> verified</li>
-      <li><strong>{{ total_users - verified_users }}</strong> pending verification</li>
+      <li><strong>All</strong> active</li>
     </ul>
   </div>
   <div>
@@ -103,19 +102,17 @@
     </div>
   </div>
   <div class="table">
-    <div class="table__row table__row--head">
-      <div>User</div>
-      <div>Status</div>
-      <div>Karma</div>
-    </div>
-    {% for entry in karma_board %}
-      <div class="table__row">
-        <div>{{ entry.username }} ({{ entry.email }})</div>
-        <div>{{ 'Verified' if entry.verified else 'Unverified' }}</div>
-        <div>{{ entry.karma }}</div>
+      <div class="table__row table__row--head">
+        <div>User</div>
+        <div>Karma</div>
       </div>
-    {% else %}
-      <div class="muted">No users yet.</div>
+      {% for entry in karma_board %}
+        <div class="table__row">
+          <div>{{ entry.username }} ({{ entry.email }})</div>
+          <div>{{ entry.karma }}</div>
+        </div>
+      {% else %}
+        <div class="muted">No users yet.</div>
     {% endfor %}
   </div>
 </section>

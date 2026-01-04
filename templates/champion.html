@@ -20,20 +20,6 @@
 <section class="panel">
   <div class="panel__header">
     <div>
-      <p class="eyebrow">Quick jump</p>
-      <h2>Navigate skins faster</h2>
-    </div>
-  </div>
-  <div class="pill-list" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
-    {% for skin in skins %}
-      <button class="pill" data-scroll-target="skin-{{ skin.skin_num }}">{{ skin.skin_name }}</button>
-    {% endfor %}
-  </div>
-</section>
-
-<section class="panel">
-  <div class="panel__header">
-    <div>
       <p class="eyebrow">Skins</p>
       <h2>{{ skins|length }} available skins</h2>
     </div>
@@ -60,12 +46,11 @@
             <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ 'Saved' if vote_data.favorite else 'Save' }}</button>
           </div>
         </div>
-        <div class="skin-card__actions">
-          <a class="skin-link" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query={{ champ_name | urlencode }}+{{ skin.skin_name | urlencode }}+SkinSpotlights">
-            <span class="play-icon" aria-hidden="true"></span> Preview
-          </a>
-          <div class="muted">Opens a YouTube search in a new tab</div>
-        </div>
+          <div class="skin-card__actions">
+            <a class="skin-link" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query={{ champ_name | urlencode }}+{{ skin.skin_name | urlencode }}+SkinSpotlights">
+              <span aria-hidden="true" class="icon">▶</span> Preview
+            </a>
+          </div>
       </article>
     {% endfor %}
   </div>
@@ -192,14 +177,6 @@
   modalNext?.addEventListener('click', () => stepModal(1));
   modalPrev?.addEventListener('click', () => stepModal(-1));
 
-  document.querySelectorAll('[data-scroll-target]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetId = btn.dataset.scrollTarget;
-      const target = document.getElementById(targetId);
-      target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-
   sortSkins();
 </script>
 
@@ -213,7 +190,7 @@
       {% endif %}
     </div>
     {% if not session.email %}
-      <div class="panel__cta">Sign in and verify your email to comment.</div>
+      <div class="panel__cta">Sign in with your email to comment.</div>
     {% endif %}
   </div>
 

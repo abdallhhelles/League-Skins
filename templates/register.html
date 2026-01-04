@@ -14,34 +14,9 @@
       <input type="password" name="password" placeholder="At least 8 characters" required />
       <label>Confirm password</label>
       <input type="password" name="password_confirm" placeholder="Re-enter password" required />
-      <div class="grid">
-        <label class="stack" for="server">
-          Server
-          <select id="server" name="server">
-            <option value="">Select server</option>
-            {% for opt in ['NA','EUW','EUNE','LAN','LAS','BR','KR','JP','OCE','RU','TR'] %}
-              <option value="{{ opt }}">{{ opt }}</option>
-            {% endfor %}
-          </select>
-        </label>
-        <label class="stack" for="main_role">
-          Main role
-          <select id="main_role" name="main_role">
-            <option value="">Select role</option>
-            {% for role in ['Top','Jungle','Mid','ADC','Support'] %}
-              <option value="{{ role }}">{{ role }}</option>
-            {% endfor %}
-          </select>
-        </label>
-      </div>
-      <label class="stack" for="favorite_champion">
-        Favorite champion
-        <input type="text" id="favorite_champion" name="favorite_champion" placeholder="e.g., Aatrox" />
-      </label>
       <button type="submit" class="button primary full">Create account</button>
     </form>
     <p class="muted">Already have an account? <a href="{{ url_for('login') }}">Log in</a>.</p>
-    <p class="muted">We’ll email a verification link before you can vote.</p>
   </div>
   <div class="auth-aside">
     <h3>Why sign up?</h3>
@@ -49,8 +24,8 @@
       <li>Keep votes fair with one-per-skin rules</li>
       <li>See rankings reorder as soon as you vote</li>
       <li>Track every champion's best looks</li>
-      <li>Verified accounts keep ballots authentic</li>
       <li>Emails stay private; only your username is public</li>
+      <li>Required email ensures secure password resets</li>
     </ul>
   </div>
 </section>
