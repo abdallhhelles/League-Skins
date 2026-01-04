@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Feedback | League Skins Vote{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Feedback</p>
+    <h1>Help us polish the experience</h1>
+    <p class="lede">Share product ideas, report issues, or suggest new features. The admin team reviews every submission.</p>
+  </div>
+</section>
+
+<section class="panel">
+  <form method="post" class="stack">
+    <label class="stack" for="topic">
+      Topic
+      <select name="topic" id="topic">
+        <option>General</option>
+        <option>Bug report</option>
+        <option>Feature request</option>
+        <option>Accessibility</option>
+        <option>Legal</option>
+      </select>
+    </label>
+    <label class="stack" for="name">
+      Name (optional)
+      <input type="text" id="name" name="name" placeholder="How should we reference you?" />
+    </label>
+    <label class="stack" for="message">
+      Feedback
+      <textarea id="message" name="message" rows="5" placeholder="Share your thoughts" required></textarea>
+    </label>
+    <button type="submit" class="button primary">Send feedback</button>
+  </form>
+</section>
+{% endblock %}

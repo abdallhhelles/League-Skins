@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}About | League Skins Vote{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Behind the platform</p>
+    <h1>Built for fans who obsess over cosmetics.</h1>
+    <p class="lede">League Skins Vote gathers every champion splash, lets players rank skins, and keeps the results transparent with account-bound votes.</p>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel__split">
+    <div>
+      <p class="eyebrow">Data sources</p>
+      <h3>Official artwork, updated automatically.</h3>
+      <p>Skin splashes and metadata are pulled with <strong>lol_splash_downloader</strong> so the catalog stays current with new releases. Each splash is displayed exactly as Riot ships it.</p>
+    </div>
+    <div class="list-card">
+      <div class="list-card__item">🎨 Latest champion splashes</div>
+      <div class="list-card__item">🧭 Skin names and IDs per champion</div>
+      <div class="list-card__item">🗳️ Vote totals stored server-side</div>
+    </div>
+  </div>
+</section>
+
+<section class="panel panel--muted">
+  <div class="panel__split">
+    <div>
+      <p class="eyebrow">Experience</p>
+      <h3>Smooth browsing, clear rankings.</h3>
+      <p>Every champion page sorts skins by community votes in real time. Search filters help you jump straight to your main, and modal previews let you enjoy full splash quality.</p>
+    </div>
+    <div class="list-card">
+      <div class="list-card__item">🔍 Fast champion search</div>
+      <div class="list-card__item">⚡ Instant vote feedback</div>
+      <div class="list-card__item">🖼️ Full-screen splash previews</div>
+    </div>
+  </div>
+</section>
+{% endblock %}
