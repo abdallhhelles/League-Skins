@@ -78,6 +78,8 @@ main { width: min(1200px, 94vw); margin: 32px auto 0; display: flex; flex-direct
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: 10px; font-weight: 700; border: 1px solid transparent; transition: all 0.2s ease; cursor: pointer; }
 .button.primary { background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #0b1020; box-shadow: 0 10px 20px rgba(34,211,238,0.25); }
 .button.primary:hover { transform: translateY(-1px); box-shadow: 0 14px 24px rgba(34,211,238,0.35); }
+.button.button--danger { background: linear-gradient(135deg, #f87171, #ef4444); color: #0b1020; box-shadow: 0 10px 20px rgba(248,113,113,0.25); }
+.button.button--danger:hover { transform: translateY(-1px); box-shadow: 0 14px 24px rgba(248,113,113,0.35); }
 .button.ghost { background: transparent; border-color: var(--border); color: var(--text); }
 .button.ghost:hover { border-color: var(--accent); color: var(--accent-strong); }
 .button.full { width: 100%; }
