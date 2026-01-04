@@ -1,23 +1,14 @@
 {
-    "majd@majd.com": {
-        "password": "scrypt:32768:8:1$DJS7x7NM5uPSZqTD$ed394276c398175f1801f0226aaa7776ce06bcde66aee41c0131b4b43b371391a0e8edc4641796999e1ea81daba39d6c3d4d8241959485e5ab743458b4dc2e02",
-        "verified": true,
-        "token": "c1ce3642-1732-4734-8851-d4cd3120439a",
-        "username": "majd",
-        "main_champion": "",
-        "favorites": []
-    },
     "abdallhhelles97@gmail.com": {
-        "password": "scrypt:32768:8:1$NzYdmZsge7xfiV1T$99463361f56d6ef9ee7095d0f6b562683eabdcc17ce6c40aa801cf786250037bf5f8b0de906460c1317bad2265da762a0142d96c39767844e4e412c5f4793129",
+        "password": "scrypt:32768:8:1$zURTkB75TknNe0qZ$ca19c22df5ac3561783756881b5e8fb046d00c83198c8d8ac83678235e2e2568eb89059fa90a6d0a085e0fd33b877807f97437d05ba43b5ec59dafa6bae84341",
         "verified": true,
-        "token": ""
-    },
-    "a@a.com": {
-        "password": "scrypt:32768:8:1$Tt8NAA6ASsLOx7NO$5662ad0ab9310d16c5d4ab1a119fe665ebc608adeb4c2a98ab09785fe4b734e21d760dccc074c7222c04c0bc19e5651b46a513e617cc48c3f11f20517ac07e05",
-        "verified": true,
-        "token": "df994c1a-413e-456b-aa91-1dbd5ec0dc86",
-        "username": "a",
+        "token": "",
+        "username": "admin",
         "main_champion": "",
-        "favorites": []
+        "favorite_champion": "",
+        "favorites": [],
+        "reset_token": "",
+        "server": "",
+        "main_role": ""
     }
 }

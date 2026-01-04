@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_secret_key_here')
 
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'abdallhhelles97@gmail.com').lower()
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'abdallhhelles..')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'abdallhhelles')
 FEEDBACK_DB_FILE = 'feedback_db.json'
 
 USERS_DB_FILE = 'users_db.json'
@@ -137,7 +137,7 @@ def ensure_admin_user():
             'password': hashed_admin_password,
             'verified': True,
             'token': '',
-            'username': 'Admin',
+            'username': 'admin',
             'main_champion': '',
             'favorite_champion': '',
             'favorites': [],
@@ -151,7 +151,7 @@ def ensure_admin_user():
         admin_profile['password'] = hashed_admin_password
         admin_profile['verified'] = True
         admin_profile['token'] = ''
-        admin_profile.setdefault('username', 'Admin')
+        admin_profile['username'] = 'admin'
         admin_profile.setdefault('main_champion', '')
         admin_profile.setdefault('favorite_champion', '')
         admin_profile.setdefault('favorites', [])
@@ -787,8 +787,6 @@ def contact():
             return redirect(url_for('contact'))
 
         profile = users.get(user_email, {}) if user_email else {}
-        server = (request.form.get('server') or profile.get('server') or '').strip()
-        main_role = (request.form.get('main_role') or profile.get('main_role') or '').strip()
         entry = {
             'id': str(uuid.uuid4()),
             'topic': subject,
@@ -798,9 +796,6 @@ def contact():
             'created_at': uuid.uuid1().hex,
             'type': 'contact',
             'category': category,
-            'server': server,
-            'main_role': main_role,
-            'favorite_champion': profile.get('favorite_champion', ''),
             'contact_email': contact_email or user_email,
         }
         feedback_entries.append(entry)
@@ -821,9 +816,6 @@ def register():
         username = (request.form.get('username') or '').strip()
         password = request.form['password']
         password_confirm = request.form.get('password_confirm')
-        server = (request.form.get('server') or '').strip()
-        main_role = (request.form.get('main_role') or '').strip()
-        favorite_champion = (request.form.get('favorite_champion') or '').strip()
 
         if not email or not password or not password_confirm or not username:
             flash('Please fill all fields.')
@@ -851,11 +843,11 @@ def register():
             'token': verification_token,
             'username': username,
             'main_champion': '',
-            'favorite_champion': favorite_champion,
+            'favorite_champion': '',
             'favorites': [],
             'reset_token': '',
-            'server': server,
-            'main_role': main_role,
+            'server': '',
+            'main_role': '',
         }
         save_users(users)
 
