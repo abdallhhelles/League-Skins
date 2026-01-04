@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Admin dashboard | League Skins Vote{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Admin</p>
+    <h1>Operations dashboard</h1>
+    <p class="lede">Review site health, engagement, and community signals at a glance.</p>
+  </div>
+  <div class="breadcrumb">
+    <a href="{{ url_for('index') }}">Home</a>
+    <span aria-hidden="true">/</span>
+    <span>Admin</span>
+  </div>
+</section>
+
+<section class="panel grid">
+  <div>
+    <p class="eyebrow">Totals</p>
+    <h2>Platform footprint</h2>
+    <dl class="stat-grid">
+      <div>
+        <dt>Champions</dt>
+        <dd>{{ stats.champions }}</dd>
+      </div>
+      <div>
+        <dt>Skins</dt>
+        <dd>{{ stats.skins }}</dd>
+      </div>
+      <div>
+        <dt>Votes</dt>
+        <dd>{{ stats.votes }}</dd>
+      </div>
+      <div>
+        <dt>Comments</dt>
+        <dd>{{ stats.comments }}</dd>
+      </div>
+      <div>
+        <dt>Favorites</dt>
+        <dd>{{ stats.favorites }}</dd>
+      </div>
+    </dl>
+  </div>
+  <div>
+    <p class="eyebrow">Accounts</p>
+    <h2>User quality</h2>
+    <ul class="pill-list">
+      <li><strong>{{ total_users }}</strong> total users</li>
+      <li><strong>{{ verified_users }}</strong> verified</li>
+      <li><strong>{{ total_users - verified_users }}</strong> pending verification</li>
+    </ul>
+  </div>
+  <div>
+    <p class="eyebrow">Maintenance</p>
+    <h2>Vote reset (with backup)</h2>
+    <p class="muted">Use only when you need a clean ballot box. A full backup is created automatically.</p>
+    <form action="{{ url_for('admin_reset_votes') }}" method="POST" class="form">
+      <label class="form__field">
+        <span>Step 1 — enter the confirmation code <code>{{ reset_token }}</code></span>
+        <input type="text" name="token_input" placeholder="Exact code" required />
+      </label>
+      <label class="form__field">
+        <span>Step 2 — enter the admin email to confirm intent</span>
+        <input type="email" name="confirm_email" placeholder="{{ ADMIN_EMAIL }}" required />
+      </label>
+      <label class="form__checkbox">
+        <input type="checkbox" name="acknowledge" required />
+        <span>I understand this permanently clears votes and I will restore from the backup if needed.</span>
+      </label>
+      <button type="submit" class="button button--danger">Reset votes &amp; save backup</button>
+    </form>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Engagement</p>
+      <h2>Comments by champion</h2>
+    </div>
+  </div>
+  <div class="table">
+    <div class="table__row table__row--head">
+      <div>Champion</div>
+      <div>Comments</div>
+    </div>
+    {% for champ, count in champion_comment_totals.items()|sort %}
+      <div class="table__row">
+        <div>{{ champ }}</div>
+        <div>{{ count }}</div>
+      </div>
+    {% else %}
+      <div class="muted">No comments yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Community</p>
+      <h2>Karma leaderboard</h2>
+    </div>
+  </div>
+  <div class="table">
+    <div class="table__row table__row--head">
+      <div>User</div>
+      <div>Status</div>
+      <div>Karma</div>
+    </div>
+    {% for entry in karma_board %}
+      <div class="table__row">
+        <div>{{ entry.username }} ({{ entry.email }})</div>
+        <div>{{ 'Verified' if entry.verified else 'Unverified' }}</div>
+        <div>{{ entry.karma }}</div>
+      </div>
+    {% else %}
+      <div class="muted">No users yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Inbox</p>
+      <h2>Contact & feedback</h2>
+    </div>
+  </div>
+  <div class="table">
+    <div class="table__row table__row--head">
+      <div>Type</div>
+      <div>From</div>
+      <div>Topic</div>
+      <div>Message</div>
+    </div>
+    {% for entry in feedback %}
+      <div class="table__row">
+        <div>{{ entry.type|title }}</div>
+        <div>{{ entry.display_name }}</div>
+        <div>{{ entry.topic }}</div>
+        <div>{{ entry.message }}</div>
+      </div>
+    {% else %}
+      <div class="muted">No messages yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

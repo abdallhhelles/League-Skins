@@ -1,56 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>League Skins Vote</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}League Skins Vote{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Community-crafted</p>
+    <h1>Vote the definitive best skin for every champion.</h1>
+    <p class="lede">Browse every splash, compare cosmetics, and champion the looks you love. Votes are transparent and locked to your account for fair results.</p>
+    <div class="actions">
+      <a class="button primary" href="#champion-grid">Browse champions</a>
+      <a class="button ghost" href="{{ url_for('about_page') }}">See how it works</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <div class="stat">{{ stats.champions }} Champions</div>
+    <div class="stat">{{ stats.skins }} Skins</div>
+    <div class="stat">{{ stats.votes }} Total votes</div>
+    <div class="stat">{{ stats.favorites }} Favorites saved</div>
+  </div>
+</section>
 
-<header id="header-bar">
-  <h1>League Skins Vote</h1>
-  <input type="text" id="searchBar" placeholder="Search champions..." />
-  <nav id="authLinks">
-    {% if session.email %}
-      <div class="welcome-container">
-        <span>Welcome, {{ session.email.split('@')[0] }}!</span>
-        <a href="{{ url_for('logout') }}">Logout</a>
-      </div>
-    {% else %}
-      <a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a>
-    {% endif %}
-  </nav>
-</header>
-
-<main>
-    <h1>Vote for your favorite skins!</h1>
-  <div class="champions-container">
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">All champions</p>
+      <h2>Choose a champion to start voting.</h2>
+    </div>
+    <div class="search">
+      <input type="search" id="searchBar" placeholder="Search champions" aria-label="Search champions" />
+    </div>
+  </div>
+  <div class="champions" id="champion-grid">
     {% for champ, skins in all_champions.items() %}
-      <div class="champion-card">
-        <a href="{{ url_for('champion_page', champ_name=champ) }}">
-          <img src="{{ url_for('static', filename=skins[0].file_path) }}" alt="{{ champ }} splash" />
-          <h2>{{ champ }}</h2>
-        </a>
-      </div>
+      <a class="champion-card" href="{{ url_for('champion_page', champ_name=champ) }}" data-name="{{ champ | lower }}">
+        <div class="champion-card__image" style="background-image:url('{{ url_for('static', filename=skins[0].file_path) }}');"></div>
+        <div class="champion-card__body">
+          <div class="champion-card__name">{{ champ }}</div>
+          <div class="champion-card__meta">{{ skins|length }} skins</div>
+        </div>
+      </a>
     {% endfor %}
   </div>
-</main>
+</section>
 
-<footer id="footer-bar">
-  <p>Coded between queues. Fueled by losses. Made by Akrot.</p>
-</footer>
+<section class="panel panel--muted">
+  <div class="panel__split">
+    <div>
+      <p class="eyebrow">Fair by design</p>
+      <h3>One account, one vote per skin.</h3>
+      <p>Votes are tied to verified accounts to keep results trustworthy. Explore splash art, rank favorites, and see community trends update instantly.</p>
+    </div>
+    <div class="list-card">
+      <div class="list-card__item">📩 Quick sign-up and email verification</div>
+      <div class="list-card__item">🛡️ Anti-duplicate vote safeguards</div>
+      <div class="list-card__item">📊 Votes stored server-side for accuracy</div>
+      <div class="list-card__item">🎨 Official splash art sourced automatically</div>
+    </div>
+  </div>
+</section>
 
 <script>
-  const searchBar = document.getElementById('searchBar');
-  const champions = document.querySelectorAll('.champion-card');
+  const searchInput = document.getElementById('searchBar');
+  const championCards = document.querySelectorAll('.champion-card');
 
-  searchBar.addEventListener('input', () => {
-    const query = searchBar.value.toLowerCase();
-    champions.forEach(card => {
-      const name = card.querySelector('h2').textContent.toLowerCase();
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase();
+    championCards.forEach(card => {
+      const name = card.dataset.name;
       card.style.display = name.includes(query) ? 'flex' : 'none';
     });
   });
 </script>
-
-</body>
-</html>
+{% endblock %}

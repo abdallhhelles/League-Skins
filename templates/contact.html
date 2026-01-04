@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Contact | League Skins Vote{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Contact</p>
+    <h1>Reach the team</h1>
+    <p class="lede">Send a direct note to the admin inbox for partnership, press, or support requests.</p>
+  </div>
+</section>
+
+<section class="panel">
+  <form method="post" class="stack">
+    <label class="stack" for="subject">
+      Subject
+      <input type="text" id="subject" name="subject" placeholder="General inquiry" />
+    </label>
+    <label class="stack" for="name">
+      Name (optional)
+      <input type="text" id="name" name="name" placeholder="Your name" />
+    </label>
+    <label class="stack" for="message">
+      Message
+      <textarea id="message" name="message" rows="5" placeholder="How can we help?" required></textarea>
+    </label>
+    <button type="submit" class="button primary">Send message</button>
+    <p class="muted">Signed-in users will be linked to their account automatically; emails stay private.</p>
+  </form>
+</section>
+{% endblock %}
