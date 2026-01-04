@@ -94,6 +94,16 @@ def champion_page(champ_name):
     return render_template('champion.html', champ_name=champ_name, skins=champ_skins, user=user_email, champ_votes=champ_votes)
 
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
+@app.route('/legal')
+def legal():
+    return render_template('legal.html')
+
+
 @app.route('/vote/<champ_name>/<skin_id>', methods=['POST'])
 def vote_skin(champ_name, skin_id):
     if 'email' not in session:

@@ -1,141 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ champ_name }} Skins - League Splash Arts</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}{{ champ_name }} skins | League Skins Vote{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <p class="eyebrow">{{ champ_name }}</p>
+    <h1>Rank every skin by community vote.</h1>
+    <p class="lede">Click a splash to view it in detail. Sign in to cast a single vote per skin and watch rankings reorder instantly.</p>
+  </div>
+  <div class="breadcrumb">
+    <a href="{{ url_for('index') }}">Champions</a>
+    <span aria-hidden="true">/</span>
+    <span>{{ champ_name }}</span>
+  </div>
+</section>
 
-  <header id="header-bar">
-    <h1>League Skins Vote</h1>
-    <nav id="authLinks">
-      <a href="{{ url_for('index') }}">← Back to all champions</a>
-      {% if session.email %}
-        <div class="welcome-container">
-          <span>Welcome, {{ session.email.split('@')[0] }}!</span>
-          <a href="{{ url_for('logout') }}">Logout</a>
-        </div>
-      {% else %}
-        <a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a>
-      {% endif %}
-    </nav>
-  </header>
-
-  <main>
-    <h1>{{ champ_name }} Skins</h1>
-
-    <div class="skins-container" id="skins-container">
-      {% for skin in skins %}
-        <div class="skin-card" data-skin-id="{{ skin.skin_num }}" data-champ-name="{{ champ_name }}">
-          <img src="{{ url_for('static', filename=skin.file_path) }}" alt="{{ skin.skin_name }}" class="skin-image" />
-          <div class="skin-info">
-            <div class="vote-left">
-              <button class="vote-btn" aria-label="Vote up"
-  {% if champ_votes[skin.skin_num].voted %} disabled style="color:crimson; opacity:1; cursor: not-allowed;" {% endif %}>
-  ❤︎
-</button>
-
-              <div class="vote-count" id="vote-count-{{ skin.skin_num }}">
-                {{ champ_votes[skin.skin_num].count if champ_votes and skin.skin_num in champ_votes else 0 }}
-              </div>
-            </div>
-            <p class="skin-name">{{ skin.skin_name }}</p>
-          </div>
-        </div>
-      {% endfor %}
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Skins</p>
+      <h2>{{ skins|length }} available skins</h2>
     </div>
-  </main>
-
-  <div id="modal" aria-hidden="true">
-    <span class="close-btn" role="button" aria-label="Close modal">&times;</span>
-    <img src="" alt="Skin Preview" id="modal-img" />
+    {% if not session.email %}
+      <div class="panel__cta">Login or create an account to vote.</div>
+    {% endif %}
   </div>
 
-  <footer id="footer-bar">
-    <p>Coded between queues. Fueled by losses. Made by Akrot.</p>
-  </footer>
+  <div class="skins-grid" id="skins-container">
+    {% for skin in skins %}
+      {% set vote_data = champ_votes.get(skin.skin_num, {'count': 0, 'voted': False}) %}
+      <article class="skin-card" data-skin-id="{{ skin.skin_num }}" data-champ-name="{{ champ_name }}">
+        <button class="skin-card__image" style="background-image:url('{{ url_for('static', filename=skin.file_path) }}');" aria-label="View {{ skin.skin_name }} splash" data-modal-src="{{ url_for('static', filename=skin.file_path) }}"></button>
+        <div class="skin-card__body">
+          <div>
+            <p class="eyebrow">{{ champ_name }}</p>
+            <h3 class="skin-card__title">{{ skin.skin_name }}</h3>
+          </div>
+          <div class="vote">
+            <button class="vote__button" {% if vote_data.voted %}disabled{% endif %}>
+              ❤
+            </button>
+            <div class="vote__count" id="vote-count-{{ skin.skin_num }}">{{ vote_data.count }}</div>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
 
-  <script>
-    const skinsContainer = document.getElementById('skins-container');
-    const modal = document.getElementById('modal');
-    const modalImg = document.getElementById('modal-img');
-    const closeBtn = modal.querySelector('.close-btn');
+<div id="modal" aria-hidden="true" class="modal">
+  <div class="modal__overlay"></div>
+  <div class="modal__content">
+    <button class="modal__close" aria-label="Close preview">×</button>
+    <img src="" alt="Skin preview" id="modal-img" />
+  </div>
+</div>
 
-    function sortSkins() {
-      const cards = Array.from(skinsContainer.children);
-      cards.sort((a, b) => {
-        const votesA = parseInt(a.querySelector('.vote-count').textContent) || 0;
-        const votesB = parseInt(b.querySelector('.vote-count').textContent) || 0;
-        return votesB - votesA;
-      });
-      cards.forEach(card => skinsContainer.appendChild(card));
-    }
+<script>
+  const skinsContainer = document.getElementById('skins-container');
+  const modal = document.getElementById('modal');
+  const modalImg = document.getElementById('modal-img');
+  const closeModalBtn = modal.querySelector('.modal__close');
 
-    document.querySelectorAll('.vote-btn').forEach(btn => {
-      btn.addEventListener('click', async e => {
-        e.stopPropagation();
-        const skinCard = e.target.closest('.skin-card');
-        if (!skinCard) return;
+  function sortSkins() {
+    const cards = Array.from(skinsContainer.children);
+    cards.sort((a, b) => {
+      const votesA = parseInt(a.querySelector('.vote__count').textContent) || 0;
+      const votesB = parseInt(b.querySelector('.vote__count').textContent) || 0;
+      return votesB - votesA;
+    });
+    cards.forEach(card => skinsContainer.appendChild(card));
+  }
 
-        const skinId = skinCard.dataset.skinId;
-        const champName = skinCard.dataset.champName;
-        if (!skinId || !champName) return alert('Invalid skin or champion.');
+  skinsContainer.querySelectorAll('.vote__button').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const card = e.target.closest('.skin-card');
+      const skinId = card.dataset.skinId;
+      const champName = card.dataset.champName;
 
-        try {
-          const response = await fetch(`/vote/${encodeURIComponent(champName)}/${encodeURIComponent(skinId)}`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+      try {
+        const response = await fetch(`/vote/${encodeURIComponent(champName)}/${encodeURIComponent(skinId)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
 
-if (response.ok) {
-  const data = await response.json();
-  const voteCountElem = skinCard.querySelector('.vote-count');
-  voteCountElem.textContent = data.votes;
-
-  // Disable button after vote
-  e.target.disabled = true;
-  e.target.style.opacity = '0.5';
-  e.target.style.cursor = 'not-allowed';
-} else {
-  const errorData = await response.json();
-  alert(errorData.error || 'Failed to vote.');
-}
-sortSkins();
-
-        } catch (error) {
-          console.error('Voting error:', error);
-          alert('An error occurred while voting.');
+        if (response.ok) {
+          const data = await response.json();
+          const countEl = card.querySelector('.vote__count');
+          countEl.textContent = data.votes;
+          btn.disabled = true;
+          sortSkins();
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Unable to register vote.');
         }
-      });
+      } catch (err) {
+        alert('Network error while voting.');
+      }
     });
+  });
 
-    document.querySelectorAll('.skin-image').forEach(img => {
-      img.addEventListener('click', e => {
-        modalImg.src = e.target.src;
-        modalImg.alt = e.target.alt;
-        modal.classList.add('active');
-        modal.setAttribute('aria-hidden', 'false');
-      });
+  document.querySelectorAll('.skin-card__image').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      modalImg.src = trigger.dataset.modalSrc;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
     });
+  });
 
-    function closeModal() {
-      modal.classList.remove('active');
-      modalImg.src = '';
-      modalImg.alt = '';
-      modal.setAttribute('aria-hidden', 'true');
-    }
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modalImg.src = '';
+    modal.setAttribute('aria-hidden', 'true');
+  }
 
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', e => {
-      if (e.target === modal) closeModal();
-    });
+  closeModalBtn.addEventListener('click', closeModal);
+  modal.querySelector('.modal__overlay').addEventListener('click', closeModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
 
-    sortSkins();
-  </script>
-
-</body>
-</html>
+  sortSkins();
+</script>
+{% endblock %}
