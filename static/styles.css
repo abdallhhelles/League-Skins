@@ -179,3 +179,14 @@ label { font-weight: 700; }
   .site-footer { position: static; }
   body { padding-bottom: 0; }
 }
+
+.favorite__button { background: #0b1220; border: 1px solid var(--border); color: gold; border-radius: 50%; width: 38px; height: 38px; cursor: pointer; }
+.favorite__button[data-favorite="true"] { background: rgba(234, 179, 8, 0.15); border-color: gold; }
+.stack { display: grid; gap: 8px; }
+.stack input, .stack select, .stack textarea { background: #0b1220; border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 10px; }
+.stack input:focus, .stack select:focus, .stack textarea:focus { outline: 2px solid var(--accent); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; align-items: start; }
+.table { display: grid; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.table__row { display: grid; grid-template-columns: repeat(4, 1fr); padding: 10px 12px; gap: 10px; align-items: center; background: #0b1220; border-bottom: 1px solid var(--border); }
+.table__row--head { background: #0f172a; font-weight: 700; }
+.table__row:last-child { border-bottom: none; }

@@ -12,6 +12,7 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_secret_key_here')
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'abdallhhelles97@gmail.com').lower()
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'abdallhhelles..')
 RESET_VOTES_ON_START = os.environ.get('RESET_VOTES_ON_START', 'true').lower() == 'true'
+FEEDBACK_DB_FILE = 'feedback_db.json'
 
 USERS_DB_FILE = 'users_db.json'
 VOTES_DB_FILE = 'votes_db.json'  # Store votes per skin, including who voted
@@ -56,15 +57,35 @@ def save_comments(comments):
     with open(COMMENTS_DB_FILE, 'w') as f:
         json.dump(comments, f, indent=4)
 
+
+def load_feedback():
+    if not os.path.exists(FEEDBACK_DB_FILE):
+        with open(FEEDBACK_DB_FILE, 'w') as f:
+            json.dump([], f)
+        return []
+    with open(FEEDBACK_DB_FILE, 'r') as f:
+        return json.load(f)
+
+
+def save_feedback(entries):
+    with open(FEEDBACK_DB_FILE, 'w') as f:
+        json.dump(entries, f, indent=4)
+
 # Load users and votes into memory
 users = load_users()
 votes = load_votes()
 comments = load_comments()
+feedback_entries = load_feedback()
+
+
+def get_display_name(email: str) -> str:
+    profile = users.get(email, {})
+    return profile.get('username') or email.split('@')[0]
 
 
 @app.context_processor
 def inject_globals():
-    return {"ADMIN_EMAIL": ADMIN_EMAIL}
+    return {"ADMIN_EMAIL": ADMIN_EMAIL, "users": users}
 
 
 def reset_votes():
@@ -86,7 +107,10 @@ def ensure_admin_user():
         users[ADMIN_EMAIL] = {
             'password': hashed_admin_password,
             'verified': True,
-            'token': ''
+            'token': '',
+            'username': 'Admin',
+            'main_champion': '',
+            'favorites': [],
         }
         save_users(users)
         print(f"Provisioned admin account: {ADMIN_EMAIL}")
@@ -94,8 +118,29 @@ def ensure_admin_user():
         admin_profile['password'] = hashed_admin_password
         admin_profile['verified'] = True
         admin_profile['token'] = ''
+        admin_profile.setdefault('username', 'Admin')
+        admin_profile.setdefault('main_champion', '')
+        admin_profile.setdefault('favorites', [])
         save_users(users)
         print(f"Verified admin account: {ADMIN_EMAIL}")
+
+
+def hydrate_user_profiles():
+    """Backfill profile fields for legacy users."""
+
+    changed = False
+    for email, profile in users.items():
+        if 'username' not in profile:
+            profile['username'] = email.split('@')[0]
+            changed = True
+        if 'main_champion' not in profile:
+            profile['main_champion'] = ''
+            changed = True
+        if 'favorites' not in profile:
+            profile['favorites'] = []
+            changed = True
+    if changed:
+        save_users(users)
 
 
 def bootstrap_splash_assets():
@@ -112,6 +157,7 @@ if RESET_VOTES_ON_START:
     reset_votes()
 
 ensure_admin_user()
+hydrate_user_profiles()
 bootstrap_splash_assets()
 
 def load_all_skins():
@@ -150,11 +196,13 @@ def compute_site_stats(all_champions):
     total_skins = sum(len(skins) for skins in all_champions.values())
     total_votes = sum(entry.get("count", 0) for entry in votes.values())
     total_comments = sum(len(comment_list) for comment_list in comments.values())
+    total_favorites = sum(len(profile.get('favorites', [])) for profile in users.values())
     return {
         "champions": total_champions,
         "skins": total_skins,
         "votes": total_votes,
         "comments": total_comments,
+        "favorites": total_favorites,
     }
 
 
@@ -197,6 +245,46 @@ def top_voted_skins(all_champions, limit=20):
     leaderboard.sort(key=lambda item: item["votes"], reverse=True)
     return leaderboard[:limit]
 
+
+def favorite_skin_for_user(email, champ_name, skin_id):
+    user_profile = users.get(email)
+    if not user_profile:
+        return False
+
+    favorites = user_profile.setdefault('favorites', [])
+    key = f"{champ_name}-{skin_id}"
+    if key in favorites:
+        favorites.remove(key)
+        changed = False
+    else:
+        favorites.append(key)
+        changed = True
+
+    save_users(users)
+    return changed
+
+
+def list_user_favorites(email, all_champions):
+    profile = users.get(email, {})
+    favorites = profile.get('favorites', [])
+    favorite_cards = []
+
+    for fav_key in favorites:
+        champ_name, _, skin_id = fav_key.partition('-')
+        champ_skins = all_champions.get(champ_name)
+        if not champ_skins:
+            continue
+        skin = next((s for s in champ_skins if str(s.get('skin_num')) == skin_id), None)
+        if not skin:
+            continue
+        favorite_cards.append({
+            'champion': champ_name,
+            'skin_name': skin.get('skin_name'),
+            'file_path': skin.get('file_path'),
+            'skin_id': skin_id,
+        })
+    return favorite_cards
+
 @app.route('/')
 def index():
     all_champions = load_all_skins()
@@ -213,6 +301,8 @@ def champion_page(champ_name):
 
     user_email = session.get('email')
     user_karma = compute_user_karma(user_email) if user_email else 0
+    user_profile = users.get(user_email, {}) if user_email else {}
+    favorites = set(user_profile.get('favorites', [])) if user_email else set()
 
     champ_votes = {}
     for skin in champ_skins:
@@ -221,7 +311,8 @@ def champion_page(champ_name):
         voted = user_email in skin_vote_data["voters"] if user_email else False
         champ_votes[skin['skin_num']] = {
             "count": skin_vote_data["count"],
-            "voted": voted
+            "voted": voted,
+            "favorite": vote_key in favorites,
         }
 
     champ_comments = comments.get(champ_name, [])
@@ -231,6 +322,12 @@ def champion_page(champ_name):
         key=lambda c: (len(c.get("upvoters", [])) - len(c.get("downvoters", [])), c.get("created_at", "")),
         reverse=True,
     )
+    enriched_comments = []
+    for comment in sorted_comments:
+        enriched_comments.append({
+            **comment,
+            'display_name': get_display_name(comment.get('author', '')),
+        })
 
     return render_template(
         'champion.html',
@@ -238,8 +335,9 @@ def champion_page(champ_name):
         skins=champ_skins,
         user=user_email,
         champ_votes=champ_votes,
-        comments=sorted_comments,
+        comments=enriched_comments,
         karma=user_karma,
+        favorites=favorites,
     )
 
 
@@ -269,12 +367,14 @@ def admin_dashboard():
     karma_board = [
         {
             "email": email,
+            "username": profile.get('username') or email.split('@')[0],
             "karma": compute_user_karma(email),
             "verified": profile.get('verified'),
         }
         for email, profile in users.items()
     ]
     karma_board.sort(key=lambda entry: entry["karma"], reverse=True)
+    feedback_sorted = sorted(feedback_entries, key=lambda f: f.get('created_at', ''), reverse=True)
 
     return render_template(
         'admin.html',
@@ -283,6 +383,7 @@ def admin_dashboard():
         verified_users=verified_users,
         champion_comment_totals=champion_comment_totals,
         karma_board=karma_board,
+        feedback=feedback_sorted,
     )
 
 
@@ -339,6 +440,30 @@ def vote_skin(champ_name, skin_id):
     return jsonify({'votes': skin_vote_data["count"]})
 
 
+@app.route('/favorite/<champ_name>/<skin_id>', methods=['POST'])
+def favorite_skin(champ_name, skin_id):
+    if 'email' not in session:
+        return jsonify({'error': 'You must be logged in to favorite skins.'}), 401
+
+    user_email = session['email']
+    user_profile = users.get(user_email)
+    if not user_profile or not user_profile.get('verified'):
+        return jsonify({'error': 'Please verify your email before saving favorites.'}), 403
+
+    all_champions = load_all_skins()
+    champ_skins = all_champions.get(champ_name)
+    if not champ_skins:
+        return jsonify({'error': 'Champion not found.'}), 404
+
+    skin_found = next((skin for skin in champ_skins if str(skin['skin_num']) == str(skin_id)), None)
+    if not skin_found:
+        return jsonify({'error': 'Skin not found.'}), 404
+
+    added = favorite_skin_for_user(user_email, champ_name, skin_id)
+    status = 'added' if added else 'removed'
+    return jsonify({'status': status})
+
+
 @app.route('/comment/<champ_name>', methods=['POST'])
 def add_comment(champ_name):
     if 'email' not in session:
@@ -370,7 +495,8 @@ def add_comment(champ_name):
 
     return jsonify({
         'id': new_comment['id'],
-        'author': user_email,
+        'author': get_display_name(user_email),
+        'display_name': get_display_name(user_email),
         'text': text,
         'upvotes': 0,
         'downvotes': 0,
@@ -426,6 +552,113 @@ def vote_comment(champ_name, comment_id):
     })
 
 
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    user_email = session.get('email')
+    if not user_email:
+        flash('Log in to manage your profile.')
+        return redirect(url_for('login'))
+
+    all_champions = load_all_skins()
+    profile = users.get(user_email, {})
+
+    if request.method == 'POST':
+        username = (request.form.get('username') or '').strip()
+        main_champion = request.form.get('main_champion', '').strip()
+
+        if not username:
+            flash('Username is required.')
+            return redirect(url_for('profile'))
+
+        # Ensure username uniqueness
+        for email, existing in users.items():
+            if email == user_email:
+                continue
+            if (existing.get('username') or '').lower() == username.lower():
+                flash('Username already in use. Please pick another.')
+                return redirect(url_for('profile'))
+
+        profile['username'] = username
+        profile['main_champion'] = main_champion
+        users[user_email] = profile
+        save_users(users)
+        flash('Profile updated.')
+        return redirect(url_for('profile'))
+
+    favorites = list_user_favorites(user_email, all_champions)
+    champion_names = sorted(all_champions.keys())
+    return render_template('profile.html', profile=profile, favorites=favorites, champions=champion_names)
+
+
+@app.route('/u/<username>')
+def public_profile(username):
+    all_champions = load_all_skins()
+    email_match = next((email for email, p in users.items() if (p.get('username') or '').lower() == username.lower()), None)
+    if not email_match:
+        return "User not found", 404
+    profile = users[email_match]
+    favorites = list_user_favorites(email_match, all_champions)
+    return render_template('public_profile.html', profile=profile, favorites=favorites)
+
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    if request.method == 'POST':
+        topic = (request.form.get('topic') or 'General').strip()
+        message = (request.form.get('message') or '').strip()
+        name = (request.form.get('name') or '').strip()
+        user_email = session.get('email')
+
+        if not message:
+            flash('Message cannot be empty.')
+            return redirect(url_for('feedback'))
+
+        entry = {
+            'id': str(uuid.uuid4()),
+            'topic': topic,
+            'message': message,
+            'from': user_email,
+            'display_name': name or (get_display_name(user_email) if user_email else 'Guest'),
+            'created_at': uuid.uuid1().hex,
+            'type': 'feedback',
+        }
+        feedback_entries.append(entry)
+        save_feedback(feedback_entries)
+        flash('Thanks for your feedback!')
+        return redirect(url_for('feedback'))
+
+    return render_template('feedback.html')
+
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        subject = (request.form.get('subject') or 'General inquiry').strip()
+        message = (request.form.get('message') or '').strip()
+        user_email = session.get('email')
+        name = (request.form.get('name') or '').strip()
+
+        if not message:
+            flash('Message cannot be empty.')
+            return redirect(url_for('contact'))
+
+        entry = {
+            'id': str(uuid.uuid4()),
+            'topic': subject,
+            'message': message,
+            'from': user_email,
+            'display_name': name or (get_display_name(user_email) if user_email else 'Guest'),
+            'created_at': uuid.uuid1().hex,
+            'type': 'contact',
+        }
+        feedback_entries.append(entry)
+        save_feedback(feedback_entries)
+        flash('Your message has been delivered to the admin inbox.')
+        return redirect(url_for('contact'))
+
+    return render_template('contact.html')
+
+
 
 # --- User auth routes ---
 
@@ -433,10 +666,11 @@ def vote_comment(champ_name, comment_id):
 def register():
     if request.method == 'POST':
         email = request.form['email'].lower()
+        username = (request.form.get('username') or '').strip()
         password = request.form['password']
         password_confirm = request.form.get('password_confirm')
 
-        if not email or not password or not password_confirm:
+        if not email or not password or not password_confirm or not username:
             flash('Please fill all fields.')
             return redirect(url_for('register'))
 
@@ -448,13 +682,21 @@ def register():
             flash('Email already registered.')
             return redirect(url_for('register'))
 
+        for profile in users.values():
+            if (profile.get('username') or '').lower() == username.lower():
+                flash('Username already taken.')
+                return redirect(url_for('register'))
+
         hashed_password = generate_password_hash(password)
         verification_token = str(uuid.uuid4())
 
         users[email] = {
             'password': hashed_password,
             'verified': False,
-            'token': verification_token
+            'token': verification_token,
+            'username': username,
+            'main_champion': '',
+            'favorites': [],
         }
         save_users(users)
 

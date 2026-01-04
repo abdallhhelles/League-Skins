@@ -6,6 +6,8 @@
     <p class="eyebrow">Join the community</p>
     <h1>Create an account.</h1>
     <form method="POST" action="{{ url_for('register') }}" class="form">
+      <label>Public username</label>
+      <input type="text" name="username" placeholder="Summoner name" required />
       <label>Email</label>
       <input type="email" name="email" placeholder="you@example.com" required />
       <label>Password</label>
@@ -24,6 +26,7 @@
       <li>See rankings reorder as soon as you vote</li>
       <li>Track every champion's best looks</li>
       <li>Verified accounts keep ballots authentic</li>
+      <li>Emails stay private; only your username is public</li>
     </ul>
   </div>
 </section>

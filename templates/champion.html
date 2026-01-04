@@ -27,7 +27,7 @@
 
   <div class="skins-grid" id="skins-container">
     {% for skin in skins %}
-      {% set vote_data = champ_votes.get(skin.skin_num, {'count': 0, 'voted': False}) %}
+      {% set vote_data = champ_votes.get(skin.skin_num, {'count': 0, 'voted': False, 'favorite': False}) %}
       <article class="skin-card" data-skin-id="{{ skin.skin_num }}" data-champ-name="{{ champ_name }}">
         <button class="skin-card__image" style="background-image:url('{{ url_for('static', filename=skin.file_path) }}');" aria-label="View {{ skin.skin_name }} splash" data-modal-src="{{ url_for('static', filename=skin.file_path) }}"></button>
         <div class="skin-card__body">
@@ -40,6 +40,7 @@
               ❤
             </button>
             <div class="vote__count" id="vote-count-{{ skin.skin_num }}">{{ vote_data.count }}</div>
+            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ '★' if vote_data.favorite else '☆' }}</button>
           </div>
         </div>
       </article>
@@ -100,6 +101,31 @@
     });
   });
 
+  skinsContainer.querySelectorAll('.favorite__button').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const card = e.target.closest('.skin-card');
+      const skinId = card.dataset.skinId;
+      const champName = card.dataset.champName;
+
+      try {
+        const response = await fetch(`/favorite/${encodeURIComponent(champName)}/${encodeURIComponent(skinId)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          alert(data.error || 'Unable to update favorite.');
+          return;
+        }
+        const isAdded = data.status === 'added';
+        btn.dataset.favorite = isAdded ? 'true' : 'false';
+        btn.textContent = isAdded ? '★' : '☆';
+      } catch (err) {
+        alert('Network error while updating favorite.');
+      }
+    });
+  });
+
   document.querySelectorAll('.skin-card__image').forEach(trigger => {
     trigger.addEventListener('click', () => {
       modalImg.src = trigger.dataset.modalSrc;
@@ -149,7 +175,7 @@
     {% for comment in comments %}
       <article class="comment" data-comment-id="{{ comment.id }}">
         <div class="comment__header">
-          <div class="comment__author">{{ comment.author }}</div>
+          <div class="comment__author">{{ comment.display_name }}</div>
           <div class="comment__meta">Karma: <span class="comment__score">{{ comment.upvoters|length - comment.downvoters|length }}</span></div>
         </div>
         <p>{{ comment.text }}</p>
@@ -193,7 +219,7 @@
         article.dataset.commentId = data.id;
         article.innerHTML = `
           <div class="comment__header">
-            <div class="comment__author">${data.author}</div>
+            <div class="comment__author">${data.display_name || data.author}</div>
             <div class="comment__meta">Karma: <span class="comment__score">${data.score}</span></div>
           </div>
           <p>${data.text}</p>

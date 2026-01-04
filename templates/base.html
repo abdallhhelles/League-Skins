@@ -21,13 +21,16 @@
       <a href="{{ url_for('top_skins') }}">Top voted</a>
       <a href="{{ url_for('about') }}">About</a>
       <a href="{{ url_for('legal') }}">Legal</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
+      <a href="{{ url_for('feedback') }}">Feedback</a>
       {% if session.email == ADMIN_EMAIL %}
         <a href="{{ url_for('admin_dashboard') }}">Admin</a>
       {% endif %}
     </nav>
     <div class="auth">
       {% if session.email %}
-        <div class="welcome">Hi, {{ session.email.split('@')[0] }}</div>
+        <div class="welcome">Hi, {{ users[session.email].username if session.email in users else session.email.split('@')[0] }}</div>
+        <a class="button ghost" href="{{ url_for('profile') }}">Profile</a>
         <a class="button ghost" href="{{ url_for('logout') }}">Logout</a>
       {% else %}
         <a class="button ghost" href="{{ url_for('login') }}">Log in</a>
@@ -55,8 +58,9 @@
       Built for League fans. Artwork and champion data are property of Riot Games.
     </div>
     <div class="footer-links">
-      <a href="{{ url_for('legal') }}">Terms & Privacy</a>
+      <a href="{{ url_for('legal') }}">Terms, Privacy & Cookies</a>
       <a href="{{ url_for('about') }}">How it works</a>
+      <a href="{{ url_for('contact') }}">Contact</a>
     </div>
   </footer>
 </body>

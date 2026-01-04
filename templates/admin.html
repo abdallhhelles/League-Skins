@@ -35,6 +35,10 @@
         <dt>Comments</dt>
         <dd>{{ stats.comments }}</dd>
       </div>
+      <div>
+        <dt>Favorites</dt>
+        <dd>{{ stats.favorites }}</dd>
+      </div>
     </dl>
   </div>
   <div>
@@ -86,12 +90,39 @@
     </div>
     {% for entry in karma_board %}
       <div class="table__row">
-        <div>{{ entry.email }}</div>
+        <div>{{ entry.username }} ({{ entry.email }})</div>
         <div>{{ 'Verified' if entry.verified else 'Unverified' }}</div>
         <div>{{ entry.karma }}</div>
       </div>
     {% else %}
       <div class="muted">No users yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Inbox</p>
+      <h2>Contact & feedback</h2>
+    </div>
+  </div>
+  <div class="table">
+    <div class="table__row table__row--head">
+      <div>Type</div>
+      <div>From</div>
+      <div>Topic</div>
+      <div>Message</div>
+    </div>
+    {% for entry in feedback %}
+      <div class="table__row">
+        <div>{{ entry.type|title }}</div>
+        <div>{{ entry.display_name }}</div>
+        <div>{{ entry.topic }}</div>
+        <div>{{ entry.message }}</div>
+      </div>
+    {% else %}
+      <div class="muted">No messages yet.</div>
     {% endfor %}
   </div>
 </section>
