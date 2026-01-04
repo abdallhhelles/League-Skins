@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Top voted skins | League Skins Vote{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Trending</p>
+    <h1>Top voted skins across the Rift.</h1>
+    <p class="lede">See what the community is loving right now. Rankings update as soon as new votes are cast.</p>
+  </div>
+  <div class="leaderboard-meta">
+    <div class="pill">{{ stats.votes }} total votes</div>
+    <div class="pill">{{ stats.skins }} skins tracked</div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Leaderboard</p>
+      <h2>Highest-rated skins by community vote</h2>
+    </div>
+  </div>
+
+  {% if leaderboard %}
+    <div class="leaderboard">
+      {% for entry in leaderboard %}
+        <article class="leaderboard__item">
+          <div class="leaderboard__rank">#{{ loop.index }}</div>
+          <div class="leaderboard__thumb" style="background-image:url('{{ url_for('static', filename=entry.file_path) }}');"></div>
+          <div class="leaderboard__details">
+            <p class="eyebrow">{{ entry.champion }}</p>
+            <h3>{{ entry.skin_name }}</h3>
+          </div>
+          <div class="leaderboard__votes">{{ entry.votes }} votes</div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <p>No votes yet. Cast some votes to see the leaderboard light up!</p>
+      <a class="button primary" href="{{ url_for('index') }}">Browse champions</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

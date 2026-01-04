@@ -4,8 +4,13 @@ import uuid
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from lol_splash_downloader.splash_art_update import sync_splash_assets
+
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Replace with a secure key
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_secret_key_here')
+
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@riftvote.test').lower()
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'TestAdmin#2024')
 
 USERS_DB_FILE = 'users_db.json'
 VOTES_DB_FILE = 'votes_db.json'  # Store votes per skin, including who voted
@@ -39,9 +44,45 @@ def save_votes(votes):
 users = load_users()
 votes = load_votes()
 
+
+def ensure_admin_user():
+    """Create a default admin/testing account if it doesn't exist."""
+
+    admin_profile = users.get(ADMIN_EMAIL)
+    if not admin_profile:
+        users[ADMIN_EMAIL] = {
+            'password': generate_password_hash(ADMIN_PASSWORD),
+            'verified': True,
+            'token': ''
+        }
+        save_users(users)
+        print(f"Provisioned admin account: {ADMIN_EMAIL}")
+    elif not admin_profile.get('verified'):
+        admin_profile['verified'] = True
+        admin_profile['token'] = ''
+        save_users(users)
+        print(f"Verified admin account: {ADMIN_EMAIL}")
+
+
+def bootstrap_splash_assets():
+    """Refresh missing splash assets on startup for a consistent experience."""
+
+    try:
+        report = sync_splash_assets(verbose=False)
+        print(f"Splash assets synced: {report}")
+    except Exception as exc:  # pragma: no cover - startup safety
+        print(f"Splash asset sync failed: {exc}")
+
+
+ensure_admin_user()
+bootstrap_splash_assets()
+
 def load_all_skins():
     all_champions = {}
     base_folder = "static/splash_arts"
+
+    if not os.path.exists(base_folder):
+        return all_champions
 
     for champ in os.listdir(base_folder):
         champ_folder = os.path.join(base_folder, champ)
@@ -66,11 +107,52 @@ def load_all_skins():
 
     return all_champions
 
+
+def compute_site_stats(all_champions):
+    total_champions = len(all_champions)
+    total_skins = sum(len(skins) for skins in all_champions.values())
+    total_votes = sum(entry.get("count", 0) for entry in votes.values())
+    return {
+        "champions": total_champions,
+        "skins": total_skins,
+        "votes": total_votes,
+    }
+
+
+def top_voted_skins(all_champions, limit=20):
+    """Return a list of the top voted skins with their metadata."""
+
+    leaderboard = []
+
+    for vote_key, data in votes.items():
+        champ_name, _, skin_id = vote_key.partition("-")
+        if not champ_name or not skin_id:
+            continue
+
+        champ_skins = all_champions.get(champ_name)
+        if not champ_skins:
+            continue
+
+        skin = next((s for s in champ_skins if str(s.get("skin_num")) == skin_id), None)
+        if not skin:
+            continue
+
+        leaderboard.append({
+            "champion": champ_name,
+            "skin_name": skin.get("skin_name"),
+            "file_path": skin.get("file_path"),
+            "votes": data.get("count", 0),
+        })
+
+    leaderboard.sort(key=lambda item: item["votes"], reverse=True)
+    return leaderboard[:limit]
+
 @app.route('/')
 def index():
     all_champions = load_all_skins()
     user_email = session.get('email')
-    return render_template('index.html', all_champions=all_champions, user=user_email, votes=votes)
+    stats = compute_site_stats(all_champions)
+    return render_template('index.html', all_champions=all_champions, user=user_email, stats=stats)
 
 @app.route('/champion/<champ_name>')
 def champion_page(champ_name):
@@ -92,6 +174,24 @@ def champion_page(champ_name):
         }
 
     return render_template('champion.html', champ_name=champ_name, skins=champ_skins, user=user_email, champ_votes=champ_votes)
+
+
+@app.route('/top')
+def top_skins():
+    all_champions = load_all_skins()
+    stats = compute_site_stats(all_champions)
+    leaderboard = top_voted_skins(all_champions, limit=30)
+    return render_template('top.html', leaderboard=leaderboard, stats=stats)
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
+@app.route('/legal')
+def legal():
+    return render_template('legal.html')
 
 
 @app.route('/vote/<champ_name>/<skin_id>', methods=['POST'])
