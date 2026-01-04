@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}{{ profile.username }}'s profile | League Skins Vote{% endblock %}
+{% block title %}{{ profile.username }}'s profile | League of Skins{% endblock %}
 {% block content %}
 <section class="page-header">
   <div>
     <p class="eyebrow">Summoner profile</p>
     <h1>{{ profile.username }}</h1>
     <p class="lede">Main champion: {{ profile.main_champion or 'Not set' }}</p>
+    <p class="muted">Favorite: {{ profile.favorite_champion or 'Not set' }} · Server: {{ profile.server or '—' }} · Role: {{ profile.main_role or '—' }}</p>
   </div>
   <div class="breadcrumb">
     <a href="{{ url_for('index') }}">Home</a>

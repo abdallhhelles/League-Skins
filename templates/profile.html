@@ -30,6 +30,35 @@
         {% endfor %}
       </select>
     </label>
+    <label class="stack" for="favorite_champion">
+      Favorite champion (displayed)
+      <select name="favorite_champion" id="favorite_champion">
+        <option value="" {% if not profile.favorite_champion %}selected{% endif %}>Pick a favorite</option>
+        {% for champ in champions %}
+          <option value="{{ champ }}" {% if profile.favorite_champion == champ %}selected{% endif %}>{{ champ }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <div class="grid">
+      <label class="stack" for="server">
+        Server
+        <select id="server" name="server">
+          <option value="" {% if not profile.server %}selected{% endif %}>Select server</option>
+          {% for opt in ['NA','EUW','EUNE','LAN','LAS','BR','KR','JP','OCE','RU','TR'] %}
+            <option value="{{ opt }}" {% if profile.server == opt %}selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="stack" for="main_role">
+        Main role
+        <select id="main_role" name="main_role">
+          <option value="" {% if not profile.main_role %}selected{% endif %}>Select role</option>
+          {% for role in ['Top','Jungle','Mid','ADC','Support'] %}
+            <option value="{{ role }}" {% if profile.main_role == role %}selected{% endif %}>{{ role }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
     <button type="submit" class="button primary">Save profile</button>
     <p class="muted">Public profile: <a href="{{ url_for('public_profile', username=profile.username) }}">/u/{{ profile.username }}</a></p>
   </form>

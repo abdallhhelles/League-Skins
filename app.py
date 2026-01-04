@@ -1,7 +1,11 @@
 import os
+import csv
 import json
 import uuid
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from io import StringIO
+
+import requests
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from lol_splash_downloader.splash_art_update import sync_splash_assets
@@ -16,6 +20,7 @@ FEEDBACK_DB_FILE = 'feedback_db.json'
 USERS_DB_FILE = 'users_db.json'
 VOTES_DB_FILE = 'votes_db.json'  # Store votes per skin, including who voted
 COMMENTS_DB_FILE = 'comments_db.json'
+CHAMPION_LORE_CACHE = 'champion_lore_cache.json'
 
 def load_users():
     if not os.path.exists(USERS_DB_FILE):
@@ -70,6 +75,18 @@ def save_feedback(entries):
     with open(FEEDBACK_DB_FILE, 'w') as f:
         json.dump(entries, f, indent=4)
 
+
+def load_lore_cache():
+    if not os.path.exists(CHAMPION_LORE_CACHE):
+        return {}
+    with open(CHAMPION_LORE_CACHE, 'r') as f:
+        return json.load(f)
+
+
+def save_lore_cache(cache):
+    with open(CHAMPION_LORE_CACHE, 'w') as f:
+        json.dump(cache, f, indent=2)
+
 # Load users and votes into memory
 users = load_users()
 votes = load_votes()
@@ -122,8 +139,11 @@ def ensure_admin_user():
             'token': '',
             'username': 'Admin',
             'main_champion': '',
+            'favorite_champion': '',
             'favorites': [],
             'reset_token': '',
+            'server': '',
+            'main_role': '',
         }
         save_users(users)
         print(f"Provisioned admin account: {ADMIN_EMAIL}")
@@ -133,8 +153,11 @@ def ensure_admin_user():
         admin_profile['token'] = ''
         admin_profile.setdefault('username', 'Admin')
         admin_profile.setdefault('main_champion', '')
+        admin_profile.setdefault('favorite_champion', '')
         admin_profile.setdefault('favorites', [])
         admin_profile.setdefault('reset_token', '')
+        admin_profile.setdefault('server', '')
+        admin_profile.setdefault('main_role', '')
         save_users(users)
         print(f"Verified admin account: {ADMIN_EMAIL}")
 
@@ -156,6 +179,15 @@ def hydrate_user_profiles():
         if 'reset_token' not in profile:
             profile['reset_token'] = ''
             changed = True
+        if 'server' not in profile:
+            profile['server'] = ''
+            changed = True
+        if 'main_role' not in profile:
+            profile['main_role'] = ''
+            changed = True
+        if 'favorite_champion' not in profile:
+            profile['favorite_champion'] = ''
+            changed = True
     if changed:
         save_users(users)
 
@@ -173,6 +205,38 @@ def bootstrap_splash_assets():
 ensure_admin_user()
 hydrate_user_profiles()
 bootstrap_splash_assets()
+lore_cache = load_lore_cache()
+
+
+def get_latest_ddragon_version():
+    try:
+        resp = requests.get("https://ddragon.leagueoflegends.com/api/versions.json", timeout=6)
+        resp.raise_for_status()
+        versions = resp.json()
+        return versions[0] if versions else "latest"
+    except Exception:
+        return "latest"
+
+
+def fetch_champion_lore(champ_name):
+    global lore_cache
+    cached = lore_cache.get(champ_name)
+    if cached:
+        return cached
+
+    version = get_latest_ddragon_version()
+    url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/champion/{champ_name}.json"
+    try:
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+        payload = resp.json()
+        lore = payload.get('data', {}).get(champ_name, {}).get('lore')
+        if lore:
+            lore_cache[champ_name] = lore
+            save_lore_cache(lore_cache)
+        return lore or ""
+    except Exception:
+        return cached or ""
 
 def load_all_skins():
     all_champions = {}
@@ -313,6 +377,8 @@ def champion_page(champ_name):
     if not champ_skins:
         return "Champion not found", 404
 
+    champion_lore = fetch_champion_lore(champ_name)
+
     user_email = session.get('email')
     user_karma = compute_user_karma(user_email) if user_email else 0
     user_profile = users.get(user_email, {}) if user_email else {}
@@ -352,6 +418,7 @@ def champion_page(champ_name):
         comments=enriched_comments,
         karma=user_karma,
         favorites=favorites,
+        champion_lore=champion_lore,
     )
 
 
@@ -408,6 +475,43 @@ def admin_dashboard():
         karma_board=karma_board,
         feedback=feedback_sorted,
         reset_token=reset_token,
+    )
+
+
+@app.route('/admin/export/messages')
+def export_messages():
+    user_email = session.get('email')
+    if user_email != ADMIN_EMAIL:
+        flash('Admin access required.')
+        return redirect(url_for('login'))
+
+    output = StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        'id', 'type', 'topic', 'category', 'display_name', 'contact_email', 'server', 'main_role', 'favorite_champion', 'message', 'created_at'
+    ])
+    for entry in feedback_entries:
+        writer.writerow([
+            entry.get('id'),
+            entry.get('type'),
+            entry.get('topic'),
+            entry.get('category', ''),
+            entry.get('display_name'),
+            entry.get('contact_email', entry.get('from', '')),
+            entry.get('server', ''),
+            entry.get('main_role', ''),
+            entry.get('favorite_champion', ''),
+            entry.get('message'),
+            entry.get('created_at'),
+        ])
+
+    csv_data = output.getvalue()
+    return Response(
+        csv_data,
+        mimetype='text/csv',
+        headers={
+            'Content-Disposition': 'attachment; filename="league-of-skins-messages.csv"'
+        }
     )
 
 
@@ -620,6 +724,9 @@ def profile():
     if request.method == 'POST':
         username = (request.form.get('username') or '').strip()
         main_champion = request.form.get('main_champion', '').strip()
+        server = request.form.get('server', '').strip()
+        main_role = request.form.get('main_role', '').strip()
+        favorite_champion = request.form.get('favorite_champion', '').strip()
 
         if not username:
             flash('Username is required.')
@@ -635,6 +742,9 @@ def profile():
 
         profile['username'] = username
         profile['main_champion'] = main_champion
+        profile['server'] = server
+        profile['main_role'] = main_role
+        profile['favorite_champion'] = favorite_champion
         users[user_email] = profile
         save_users(users)
         flash('Profile updated.')
@@ -658,31 +768,8 @@ def public_profile(username):
 
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
-    if request.method == 'POST':
-        topic = (request.form.get('topic') or 'General').strip()
-        message = (request.form.get('message') or '').strip()
-        name = (request.form.get('name') or '').strip()
-        user_email = session.get('email')
-
-        if not message:
-            flash('Message cannot be empty.')
-            return redirect(url_for('feedback'))
-
-        entry = {
-            'id': str(uuid.uuid4()),
-            'topic': topic,
-            'message': message,
-            'from': user_email,
-            'display_name': name or (get_display_name(user_email) if user_email else 'Guest'),
-            'created_at': uuid.uuid1().hex,
-            'type': 'feedback',
-        }
-        feedback_entries.append(entry)
-        save_feedback(feedback_entries)
-        flash('Thanks for your feedback!')
-        return redirect(url_for('feedback'))
-
-    return render_template('feedback.html')
+    flash('Feedback and contact are now in one place.')
+    return redirect(url_for('contact'))
 
 
 @app.route('/contact', methods=['GET', 'POST'])
@@ -690,13 +777,18 @@ def contact():
     if request.method == 'POST':
         subject = (request.form.get('subject') or 'General inquiry').strip()
         message = (request.form.get('message') or '').strip()
+        category = (request.form.get('category') or 'General').strip()
         user_email = session.get('email')
         name = (request.form.get('name') or '').strip()
+        contact_email = (request.form.get('contact_email') or '').strip()
 
         if not message:
             flash('Message cannot be empty.')
             return redirect(url_for('contact'))
 
+        profile = users.get(user_email, {}) if user_email else {}
+        server = (request.form.get('server') or profile.get('server') or '').strip()
+        main_role = (request.form.get('main_role') or profile.get('main_role') or '').strip()
         entry = {
             'id': str(uuid.uuid4()),
             'topic': subject,
@@ -705,10 +797,15 @@ def contact():
             'display_name': name or (get_display_name(user_email) if user_email else 'Guest'),
             'created_at': uuid.uuid1().hex,
             'type': 'contact',
+            'category': category,
+            'server': server,
+            'main_role': main_role,
+            'favorite_champion': profile.get('favorite_champion', ''),
+            'contact_email': contact_email or user_email,
         }
         feedback_entries.append(entry)
         save_feedback(feedback_entries)
-        flash('Your message has been delivered to the admin inbox.')
+        flash('Thanks for reaching out. We log every detail so we can respond quickly.')
         return redirect(url_for('contact'))
 
     return render_template('contact.html')
@@ -724,6 +821,9 @@ def register():
         username = (request.form.get('username') or '').strip()
         password = request.form['password']
         password_confirm = request.form.get('password_confirm')
+        server = (request.form.get('server') or '').strip()
+        main_role = (request.form.get('main_role') or '').strip()
+        favorite_champion = (request.form.get('favorite_champion') or '').strip()
 
         if not email or not password or not password_confirm or not username:
             flash('Please fill all fields.')
@@ -751,8 +851,11 @@ def register():
             'token': verification_token,
             'username': username,
             'main_champion': '',
+            'favorite_champion': favorite_champion,
             'favorites': [],
             'reset_token': '',
+            'server': server,
+            'main_role': main_role,
         }
         save_users(users)
 

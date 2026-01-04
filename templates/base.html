@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}League Skins Vote{% endblock %}</title>
+  <title>{% block title %}League of Skins{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script>
@@ -18,9 +19,9 @@
 <body>
   <header class="site-header">
     <div class="brand">
-      <a href="{{ url_for('index') }}" aria-label="League Skins Vote home">
+      <a href="{{ url_for('index') }}" aria-label="League of Skins home">
         <span class="brand__pill">Beta</span>
-        <span class="brand__name">League Skins Vote</span>
+        <span class="brand__name">League of Skins</span>
       </a>
     </div>
     <nav class="site-nav">
@@ -29,13 +30,12 @@
       <a href="{{ url_for('about_page') }}">About</a>
       <a href="{{ url_for('legal') }}">Legal</a>
       <a href="{{ url_for('contact') }}">Contact</a>
-      <a href="{{ url_for('feedback') }}">Feedback</a>
       {% if session.email == ADMIN_EMAIL %}
         <a href="{{ url_for('admin_dashboard') }}">Admin</a>
       {% endif %}
     </nav>
     <div class="auth">
-      <button class="button ghost toggle" id="theme-toggle" type="button" aria-label="Toggle theme">🌓</button>
+      <button class="button ghost toggle" id="theme-toggle" type="button" aria-label="Toggle theme">Theme</button>
       {% if session.email %}
         <div class="welcome">Hi, {{ users[session.email].username if session.email in users else session.email.split('@')[0] }}</div>
         <a class="button ghost" href="{{ url_for('profile') }}">Profile</a>
@@ -61,22 +61,92 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="site-footer">
-    <div>
-      Built for League fans. Artwork and champion data are property of Riot Games.
+  <footer class="site-footer" data-pinned="false" data-collapsed="false">
+    <div class="footer-main">
+      <div>
+        Built for League fans. Artwork and champion data are property of Riot Games.
+        <a class="bmc" href="https://buymeacoffee.com/akrot" target="_blank" rel="noopener">Buy me a coffee</a>
+      </div>
+      <div class="footer-links">
+        <a href="{{ url_for('legal') }}">Terms, Privacy & Cookies</a>
+        <a href="{{ url_for('about_page') }}">How it works</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
+      </div>
     </div>
-    <div class="footer-links">
-      <a href="{{ url_for('legal') }}">Terms, Privacy & Cookies</a>
-      <a href="{{ url_for('about_page') }}">How it works</a>
-      <a href="{{ url_for('contact') }}">Contact</a>
+    <div class="footer-controls">
+      <button type="button" class="button ghost" id="footer-pin">Pin to bottom</button>
+      <button type="button" class="button ghost" id="footer-hide">Hide</button>
     </div>
   </footer>
+  <button id="footer-show" class="button primary floating" hidden>Show footer</button>
+  <div class="cookie-bar" id="cookie-bar" hidden>
+    <div>
+      League of Skins uses cookies to remember your preferences and keep navigation smooth. By continuing you agree to our cookie policy.
+    </div>
+    <div class="cookie-actions">
+      <button type="button" class="button ghost" id="cookie-decline">Decline</button>
+      <button type="button" class="button primary" id="cookie-accept">Accept</button>
+    </div>
+  </div>
   <script>
     const toggle = document.getElementById('theme-toggle');
     const root = document.documentElement;
     toggle?.addEventListener('click', () => {
       const isLight = root.classList.toggle('theme-light');
       localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+
+    const footer = document.querySelector('.site-footer');
+    const footerPin = document.getElementById('footer-pin');
+    const footerHide = document.getElementById('footer-hide');
+    const footerShow = document.getElementById('footer-show');
+    const cookieBar = document.getElementById('cookie-bar');
+    const cookieAccept = document.getElementById('cookie-accept');
+    const cookieDecline = document.getElementById('cookie-decline');
+
+    const footerPrefs = JSON.parse(localStorage.getItem('footerPrefs') || '{}');
+
+    function applyFooterPrefs() {
+      const pinned = footerPrefs.pinned;
+      const collapsed = footerPrefs.collapsed;
+      footer.dataset.pinned = pinned ? 'true' : 'false';
+      footer.dataset.collapsed = collapsed ? 'true' : 'false';
+      footerShow.hidden = !collapsed;
+      footerPin.textContent = pinned ? 'Unpin footer' : 'Pin to bottom';
+    }
+
+    applyFooterPrefs();
+
+    footerPin?.addEventListener('click', () => {
+      footerPrefs.pinned = !footerPrefs.pinned;
+      localStorage.setItem('footerPrefs', JSON.stringify(footerPrefs));
+      applyFooterPrefs();
+      footerPin.textContent = footerPrefs.pinned ? 'Unpin footer' : 'Pin to bottom';
+    });
+
+    footerHide?.addEventListener('click', () => {
+      footerPrefs.collapsed = true;
+      localStorage.setItem('footerPrefs', JSON.stringify(footerPrefs));
+      applyFooterPrefs();
+    });
+
+    footerShow?.addEventListener('click', () => {
+      footerPrefs.collapsed = false;
+      localStorage.setItem('footerPrefs', JSON.stringify(footerPrefs));
+      applyFooterPrefs();
+    });
+
+    const consent = localStorage.getItem('cookieConsent');
+    if (!consent) {
+      cookieBar.hidden = false;
+    }
+    cookieAccept?.addEventListener('click', () => {
+      localStorage.setItem('cookieConsent', 'accepted');
+      cookieBar.hidden = true;
+    });
+    cookieDecline?.addEventListener('click', () => {
+      localStorage.setItem('cookieConsent', 'declined');
+      cookieBar.hidden = true;
     });
   </script>
 </body>
