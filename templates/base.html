@@ -37,6 +37,7 @@
       <button class="button ghost toggle" id="theme-toggle" type="button" aria-label="Toggle theme">Theme</button>
       {% if session.email %}
         <div class="welcome">Hi, {{ users[session.email].username if session.email in users else session.email.split('@')[0] }}</div>
+        <a class="button ghost" href="{{ url_for('notifications_page') }}">Notifications{% if unread_notifications %} ({{ unread_notifications }}){% endif %}</a>
         <a class="button ghost" href="{{ url_for('profile') }}">Profile</a>
         <a class="button ghost" href="{{ url_for('logout') }}">Logout</a>
       {% else %}
