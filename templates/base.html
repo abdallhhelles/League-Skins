@@ -27,14 +27,14 @@
     <nav class="site-nav">
       <a href="{{ url_for('index') }}">Champions</a>
       <a href="{{ url_for('top_skins') }}">Top voted</a>
-      <a href="{{ url_for('about_page') }}">About</a>
-      <a href="{{ url_for('contact') }}">Contact</a>
       {% if session.email == ADMIN_EMAIL %}
         <a href="{{ url_for('admin_dashboard') }}">Admin</a>
       {% endif %}
     </nav>
     <div class="auth">
-      <button class="button ghost toggle" id="theme-toggle" type="button" aria-label="Toggle theme">Theme</button>
+      <button class="button ghost toggle" id="theme-toggle" type="button" aria-label="Toggle theme">
+        <span class="emoji-mono" aria-hidden="true">☾</span>
+      </button>
       {% if session.email %}
         <div class="welcome">Hi, {{ users[session.email].username if session.email in users else session.email.split('@')[0] }}</div>
         <a class="button ghost" href="{{ url_for('notifications_page') }}">Notifications{% if unread_notifications %} ({{ unread_notifications }}){% endif %}</a>
@@ -86,14 +86,18 @@
   <script>
     const toggle = document.getElementById('theme-toggle');
     const root = document.documentElement;
-    const themeLabel = () => root.classList.contains('theme-light') ? '☀ Light' : '☾ Dark';
+
+    const updateThemeToggle = () => {
+      const isLight = root.classList.contains('theme-light');
+      toggle.innerHTML = `<span class="emoji-mono" aria-hidden="true">${isLight ? '☀' : '☾'}</span>`;
+    };
 
     if (toggle) {
-      toggle.innerHTML = `<span class="emoji-mono" aria-hidden="true">${root.classList.contains('theme-light') ? '☀' : '☾'}</span> ${themeLabel().split(' ')[1]}`;
+      updateThemeToggle();
       toggle.addEventListener('click', () => {
         const isLight = root.classList.toggle('theme-light');
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        toggle.innerHTML = `<span class="emoji-mono" aria-hidden="true">${isLight ? '☀' : '☾'}</span> ${themeLabel().split(' ')[1]}`;
+        updateThemeToggle();
       });
     }
 

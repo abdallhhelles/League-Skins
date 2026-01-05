@@ -3,9 +3,8 @@
 {% block content %}
 <section class="page-header">
   <div>
-    <p class="eyebrow">{{ champ_name }}</p>
-    <h1>Rank every skin by community vote.</h1>
-    <p class="lede">Click a splash to view it in detail. Sign in to cast a single vote per skin and watch rankings reorder instantly.</p>
+    <p class="eyebrow">Champion</p>
+    <h1>{{ champ_name }} skins</h1>
     {% if champion_lore %}
       <p class="muted" style="max-width: 720px;">{{ champion_lore }}</p>
     {% endif %}
@@ -51,7 +50,7 @@
           </div>
           <div class="vote">
             <button class="vote__button" data-voted="{{ 'true' if vote_data.voted else 'false' }}">
-              <span class="emoji-mono" aria-hidden="true">⬆</span> {{ 'Remove' if vote_data.voted else 'Vote' }}
+              {{ 'Remove' if vote_data.voted else 'Vote' }}
             </button>
             <div class="vote__count" id="vote-count-{{ skin.skin_num }}">{{ vote_data.count }}</div>
           </div>
@@ -123,7 +122,7 @@
           countEl.textContent = data.votes;
           const isVoted = data.status === 'added';
           btn.dataset.voted = isVoted ? 'true' : 'false';
-          btn.innerHTML = `<span class="emoji-mono" aria-hidden="true">⬆</span> ${isVoted ? 'Remove' : 'Vote'}`;
+          btn.innerHTML = isVoted ? 'Remove' : 'Vote';
           sortSkins();
         } else {
           const error = await response.json();
