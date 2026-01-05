@@ -15,6 +15,18 @@
     <span aria-hidden="true">/</span>
     <span>{{ champ_name }}</span>
   </div>
+  <div class="champion-nav">
+    {% if prev_champ %}
+      <a class="button ghost" href="{{ url_for('champion_page', champ_name=prev_champ) }}" aria-label="Previous champion">
+        ← {{ prev_champ }}
+      </a>
+    {% endif %}
+    {% if next_champ %}
+      <a class="button ghost" href="{{ url_for('champion_page', champ_name=next_champ) }}" aria-label="Next champion">
+        {{ next_champ }} →
+      </a>
+    {% endif %}
+  </div>
 </section>
 
 <section class="panel">
@@ -35,15 +47,14 @@
         <button class="skin-card__image" style="background-image:url('{{ url_for('static', filename=skin.file_path) }}');" aria-label="View {{ skin.skin_name }} splash" data-modal-src="{{ url_for('static', filename=skin.file_path) }}"></button>
         <div class="skin-card__body">
           <div>
-            <p class="eyebrow">{{ champ_name }}</p>
             <h3 class="skin-card__title">{{ skin.skin_name }}</h3>
           </div>
           <div class="vote">
-            <button class="vote__button" {% if vote_data.voted %}disabled{% endif %}>
-              {{ 'Voted' if vote_data.voted else 'Vote' }}
+            <button class="vote__button" data-voted="{{ 'true' if vote_data.voted else 'false' }}">
+              {{ 'Remove vote' if vote_data.voted else 'Vote' }}
             </button>
             <div class="vote__count" id="vote-count-{{ skin.skin_num }}">{{ vote_data.count }}</div>
-            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ 'Saved ❤️' if vote_data.favorite else 'Save ❤️' }}</button>
+            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ 'Saved ' if vote_data.favorite else 'Save ' }}<span class="emoji-mono" aria-hidden="true">♥</span></button>
           </div>
         </div>
           <div class="skin-card__actions">
@@ -94,18 +105,22 @@
       const card = e.target.closest('.skin-card');
       const skinId = card.dataset.skinId;
       const champName = card.dataset.champName;
+      const action = btn.dataset.voted === 'true' ? 'remove' : 'add';
 
       try {
         const response = await fetch(`/vote/${encodeURIComponent(champName)}/${encodeURIComponent(skinId)}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action })
         });
 
         if (response.ok) {
           const data = await response.json();
           const countEl = card.querySelector('.vote__count');
           countEl.textContent = data.votes;
-          btn.disabled = true;
+          const isVoted = data.status === 'added';
+          btn.dataset.voted = isVoted ? 'true' : 'false';
+          btn.textContent = isVoted ? 'Remove vote' : 'Vote';
           sortSkins();
         } else {
           const error = await response.json();
@@ -135,7 +150,7 @@
         }
         const isAdded = data.status === 'added';
         btn.dataset.favorite = isAdded ? 'true' : 'false';
-        btn.textContent = isAdded ? 'Saved ❤️' : 'Save ❤️';
+        btn.innerHTML = isAdded ? 'Saved <span class="emoji-mono" aria-hidden="true">♥</span>' : 'Save <span class="emoji-mono" aria-hidden="true">♥</span>';
       } catch (err) {
         alert('Network error while updating favorite.');
       }
@@ -194,6 +209,17 @@
     {% endif %}
   </div>
 
+  {% if champ_notifications %}
+    <div class="notice">
+      <div class="notice__title">New replies to your comments</div>
+      <ul class="notice__list">
+        {% for note in champ_notifications %}
+          <li><a href="{{ note.link }}">{{ note.message }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
   {% if session.email %}
     <form class="comment-form" id="comment-form">
       <label for="comment-text" class="eyebrow">Add a comment</label>
@@ -202,28 +228,98 @@
     </form>
   {% endif %}
 
+  {% macro render_comment(comment) %}
+    <article class="comment" data-comment-id="{{ comment.id }}" id="comment-{{ comment.id }}">
+      <div class="comment__header">
+        <div class="comment__author">{{ comment.display_name }}</div>
+        <div class="comment__meta">Karma: <span class="comment__score">{{ comment.score }}</span></div>
+      </div>
+      <p class="comment__text">{{ comment.text }}</p>
+      <div class="comment__actions">
+        <button class="comment__vote" data-direction="up"><span class="emoji-mono" aria-hidden="true">▲</span> {{ comment.upvotes }}</button>
+        <button class="comment__vote" data-direction="down"><span class="emoji-mono" aria-hidden="true">▼</span> {{ comment.downvotes }}</button>
+        {% if session.email %}
+          <button class="comment__reply" type="button">Reply</button>
+        {% endif %}
+      </div>
+      {% if session.email %}
+        <form class="reply-form" hidden>
+          <textarea rows="2" required placeholder="Write a reply"></textarea>
+          <div class="reply-form__actions">
+            <button type="submit" class="button primary">Post reply</button>
+            <button type="button" class="button ghost reply-cancel">Cancel</button>
+          </div>
+        </form>
+      {% endif %}
+      {% if comment.replies %}
+        <div class="comment__replies">
+          {% for reply in comment.replies %}
+            {{ render_comment(reply) }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </article>
+  {% endmacro %}
+
   <div id="comment-list" class="comment-list">
-    {% for comment in comments %}
-      <article class="comment" data-comment-id="{{ comment.id }}">
-        <div class="comment__header">
-          <div class="comment__author">{{ comment.display_name }}</div>
-          <div class="comment__meta">Karma: <span class="comment__score">{{ comment.upvoters|length - comment.downvoters|length }}</span></div>
-        </div>
-        <p>{{ comment.text }}</p>
-        <div class="comment__actions">
-          <button class="comment__vote" data-direction="up">Upvote {{ comment.upvoters|length }}</button>
-          <button class="comment__vote" data-direction="down">Downvote {{ comment.downvoters|length }}</button>
-        </div>
-      </article>
+    {% if comments %}
+      {% for comment in comments %}
+        {{ render_comment(comment) }}
+      {% endfor %}
     {% else %}
       <p class="muted">No comments yet. Start the conversation.</p>
-    {% endfor %}
+    {% endif %}
   </div>
 </section>
 
 <script>
   const commentForm = document.getElementById('comment-form');
   const commentList = document.getElementById('comment-list');
+  const canReply = {{ (session.email is not none)|tojson }};
+
+  const escapeHtml = (unsafe) => {
+    return unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
+  const buildComment = (data) => {
+    const article = document.createElement('article');
+    article.className = 'comment';
+    article.dataset.commentId = data.id;
+    article.id = `comment-${data.id}`;
+    article.innerHTML = `
+      <div class="comment__header">
+        <div class="comment__author">${escapeHtml(data.display_name || data.author || 'Anonymous')}</div>
+        <div class="comment__meta">Karma: <span class="comment__score">${data.score ?? 0}</span></div>
+      </div>
+      <p class="comment__text">${escapeHtml(data.text || '')}</p>
+      <div class="comment__actions">
+        <button class="comment__vote" data-direction="up"><span class="emoji-mono" aria-hidden="true">▲</span> ${data.upvotes ?? 0}</button>
+        <button class="comment__vote" data-direction="down"><span class="emoji-mono" aria-hidden="true">▼</span> ${data.downvotes ?? 0}</button>
+        ${canReply ? '<button class="comment__reply" type="button">Reply</button>' : ''}
+      </div>
+      ${canReply ? `
+        <form class="reply-form" hidden>
+          <textarea rows="2" required placeholder="Write a reply"></textarea>
+          <div class="reply-form__actions">
+            <button type="submit" class="button primary">Post reply</button>
+            <button type="button" class="button ghost reply-cancel">Cancel</button>
+          </div>
+        </form>` : ''}
+      <div class="comment__replies"></div>
+    `;
+
+    if (Array.isArray(data.replies)) {
+      const repliesContainer = article.querySelector('.comment__replies');
+      data.replies.forEach(reply => repliesContainer.appendChild(buildComment(reply)));
+    }
+
+    return article;
+  };
 
   if (commentForm) {
     commentForm.addEventListener('submit', async (e) => {
@@ -245,21 +341,7 @@
           return;
         }
 
-        const article = document.createElement('article');
-        article.className = 'comment';
-        article.dataset.commentId = data.id;
-        article.innerHTML = `
-          <div class="comment__header">
-            <div class="comment__author">${data.display_name || data.author}</div>
-            <div class="comment__meta">Karma: <span class="comment__score">${data.score}</span></div>
-          </div>
-          <p>${data.text}</p>
-          <div class="comment__actions">
-            <button class="comment__vote" data-direction="up">Upvote ${data.upvotes}</button>
-            <button class="comment__vote" data-direction="down">Downvote ${data.downvotes}</button>
-          </div>
-        `;
-
+        const article = buildComment(data);
         commentList.prepend(article);
         textArea.value = '';
       } catch (err) {
@@ -269,6 +351,27 @@
   }
 
   commentList?.addEventListener('click', async (e) => {
+    const replyBtn = e.target.closest('.comment__reply');
+    if (replyBtn) {
+      const comment = replyBtn.closest('.comment');
+      const form = comment.querySelector('.reply-form');
+      if (form) {
+        form.hidden = false;
+        form.querySelector('textarea')?.focus();
+      }
+      return;
+    }
+
+    const cancelBtn = e.target.closest('.reply-cancel');
+    if (cancelBtn) {
+      const form = cancelBtn.closest('.reply-form');
+      if (form) {
+        form.hidden = true;
+        form.reset();
+      }
+      return;
+    }
+
     const voteBtn = e.target.closest('.comment__vote');
     if (!voteBtn) return;
 
@@ -290,13 +393,50 @@
 
       const [upBtn, downBtn] = comment.querySelectorAll('.comment__vote');
       if (upBtn && downBtn) {
-        upBtn.textContent = `Upvote ${data.upvotes}`;
-        downBtn.textContent = `Downvote ${data.downvotes}`;
+        upBtn.innerHTML = `<span class="emoji-mono" aria-hidden="true">▲</span> ${data.upvotes}`;
+        downBtn.innerHTML = `<span class="emoji-mono" aria-hidden="true">▼</span> ${data.downvotes}`;
       }
       const scoreEl = comment.querySelector('.comment__score');
       if (scoreEl) scoreEl.textContent = data.score;
     } catch (err) {
       alert('Network error while voting on comment.');
+    }
+  });
+
+  commentList?.addEventListener('submit', async (e) => {
+    const replyForm = e.target.closest('.reply-form');
+    if (!replyForm) return;
+
+    e.preventDefault();
+    const textArea = replyForm.querySelector('textarea');
+    const text = textArea.value.trim();
+    if (!text) return;
+
+    const parent = replyForm.closest('.comment');
+    const commentId = parent?.dataset.commentId;
+
+    try {
+      const response = await fetch(`/comment/${champSlug}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, parent_id: commentId })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.error || 'Unable to post reply.');
+        return;
+      }
+
+      const repliesContainer = parent?.querySelector('.comment__replies');
+      const replyNode = buildComment(data);
+      if (repliesContainer) {
+        repliesContainer.prepend(replyNode);
+      }
+      replyForm.reset();
+      replyForm.hidden = true;
+    } catch (err) {
+      alert('Network error while posting reply.');
     }
   });
 </script>

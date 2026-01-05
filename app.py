@@ -102,10 +102,17 @@ def get_display_name(email: str) -> str:
 
 @app.context_processor
 def inject_globals():
+    user_email = session.get('email')
+    unread_notifications = 0
+    if user_email:
+        profile = users.get(user_email, {})
+        notifications = profile.get('notifications', [])
+        unread_notifications = sum(1 for note in notifications if not note.get('read'))
     return {
         "ADMIN_EMAIL": ADMIN_EMAIL,
         "users": users,
         "current_year": datetime.utcnow().year,
+        "unread_notifications": unread_notifications,
     }
 
 
@@ -190,8 +197,47 @@ def hydrate_user_profiles():
         if 'favorite_champion' not in profile:
             profile['favorite_champion'] = ''
             changed = True
+        if 'notifications' not in profile:
+            profile['notifications'] = []
+            changed = True
     if changed:
         save_users(users)
+
+
+def add_notification(user_email, message, link, champion=None):
+    profile = users.get(user_email)
+    if not profile:
+        return
+    notification = {
+        'id': str(uuid.uuid4()),
+        'message': message,
+        'link': link,
+        'read': False,
+        'created_at': datetime.utcnow().isoformat(),
+        'champion': champion or '',
+    }
+    profile.setdefault('notifications', []).append(notification)
+    save_users(users)
+
+
+def mark_champion_notifications_read(user_email, champion):
+    profile = users.get(user_email)
+    if not profile:
+        return []
+    notifications = profile.get('notifications', [])
+    relevant = []
+    for note in notifications:
+        if note.get('champion') == champion and not note.get('read'):
+            note['read'] = True
+            relevant.append(note)
+    if relevant:
+        save_users(users)
+    return relevant
+
+
+def get_unread_notifications(user_email):
+    profile = users.get(user_email, {})
+    return [note for note in profile.get('notifications', []) if not note.get('read')]
 
 
 def bootstrap_splash_assets():
@@ -297,6 +343,33 @@ def compute_user_karma(user_email):
     return score
 
 
+def prepare_comment_threads(champ_comments):
+    enriched = {}
+    for comment in champ_comments:
+        copy = {**comment}
+        copy['upvotes'] = len(copy.get('upvoters', []))
+        copy['downvotes'] = len(copy.get('downvoters', []))
+        copy['score'] = copy['upvotes'] - copy['downvotes']
+        copy['replies'] = []
+        enriched[copy['id']] = copy
+
+    roots = []
+    for comment in enriched.values():
+        parent_id = comment.get('parent_id')
+        if parent_id and parent_id in enriched:
+            enriched[parent_id]['replies'].append(comment)
+        else:
+            roots.append(comment)
+
+    def sort_comments(items):
+        items.sort(key=lambda c: (c.get('score', 0), c.get('created_at', '')), reverse=True)
+        for item in items:
+            sort_comments(item['replies'])
+
+    sort_comments(roots)
+    return roots
+
+
 def top_voted_skins(all_champions, limit=20):
     """Return a list of the top voted skins with their metadata."""
 
@@ -379,6 +452,16 @@ def champion_page(champ_name):
     if not champ_skins:
         return "Champion not found", 404
 
+    champion_names = sorted(all_champions.keys(), key=lambda name: name.lower())
+    prev_champ = None
+    next_champ = None
+    if champ_name in champion_names:
+        idx = champion_names.index(champ_name)
+        if idx > 0:
+            prev_champ = champion_names[idx - 1]
+        if idx < len(champion_names) - 1:
+            next_champ = champion_names[idx + 1]
+
     champion_lore = fetch_champion_lore(champ_name)
 
     user_email = session.get('email')
@@ -398,18 +481,18 @@ def champion_page(champ_name):
         }
 
     champ_comments = comments.get(champ_name, [])
-    # Sort comments by karma then recency
-    sorted_comments = sorted(
-        champ_comments,
-        key=lambda c: (len(c.get("upvoters", [])) - len(c.get("downvoters", [])), c.get("created_at", "")),
-        reverse=True,
-    )
-    enriched_comments = []
-    for comment in sorted_comments:
-        enriched_comments.append({
-            **comment,
-            'display_name': get_display_name(comment.get('author', '')),
-        })
+    threaded_comments = prepare_comment_threads(champ_comments)
+
+    def attach_display(items):
+        for item in items:
+            item['display_name'] = get_display_name(item.get('author', ''))
+            attach_display(item['replies'])
+
+    attach_display(threaded_comments)
+
+    champ_notifications = []
+    if user_email:
+        champ_notifications = mark_champion_notifications_read(user_email, champ_name)
 
     return render_template(
         'champion.html',
@@ -417,11 +500,37 @@ def champion_page(champ_name):
         skins=champ_skins,
         user=user_email,
         champ_votes=champ_votes,
-        comments=enriched_comments,
+        comments=threaded_comments,
         karma=user_karma,
         favorites=favorites,
         champion_lore=champion_lore,
+        prev_champ=prev_champ,
+        next_champ=next_champ,
+        champ_notifications=champ_notifications,
     )
+
+
+@app.route('/notifications')
+def notifications_page():
+    user_email = session.get('email')
+    if not user_email:
+        flash('Log in to view notifications.')
+        return redirect(url_for('login'))
+
+    profile = users.get(user_email, {})
+    notifications = sorted(profile.get('notifications', []), key=lambda n: n.get('created_at', ''), reverse=True)
+    changed = False
+    for note in notifications:
+        if not note.get('link'):
+            note['link'] = url_for('index')
+            changed = True
+        if not note.get('read'):
+            note['read'] = True
+            changed = True
+    if changed:
+        save_users(users)
+
+    return render_template('notifications.html', notifications=notifications)
 
 
 @app.route('/top')
@@ -564,6 +673,9 @@ def vote_skin(champ_name, skin_id):
     user_email = session['email']
     all_champions = load_all_skins()
 
+    payload = request.get_json(silent=True) or {}
+    action = payload.get('action', 'add')
+
     # Verify champion exists
     champ_skins = all_champions.get(champ_name)
     if not champ_skins:
@@ -586,17 +698,24 @@ def vote_skin(champ_name, skin_id):
 
     skin_vote_data = votes[vote_key]
 
-    # Prevent double voting
-    if user_email in skin_vote_data["voters"]:
-        return jsonify({'error': 'You already voted for this skin.'}), 403
+    if action == 'remove':
+        if user_email not in skin_vote_data["voters"]:
+            return jsonify({'error': 'You have not voted for this skin yet.'}), 400
+        skin_vote_data["voters"].remove(user_email)
+        skin_vote_data["count"] = max(0, skin_vote_data["count"] - 1)
+        status = 'removed'
+    else:
+        # Prevent double voting
+        if user_email in skin_vote_data["voters"]:
+            return jsonify({'error': 'You already voted for this skin.'}), 403
 
-    # Register the vote
-    skin_vote_data["count"] += 1
-    skin_vote_data["voters"].append(user_email)
+        skin_vote_data["count"] += 1
+        skin_vote_data["voters"].append(user_email)
+        status = 'added'
 
     save_votes(votes)
 
-    return jsonify({'votes': skin_vote_data["count"]})
+    return jsonify({'votes': skin_vote_data["count"], 'status': status})
 
 
 @app.route('/favorite/<champ_name>/<skin_id>', methods=['POST'])
@@ -635,9 +754,17 @@ def add_comment(champ_name):
 
     payload = request.get_json(force=True)
     text = (payload.get('text') or '').strip()
+    parent_id = payload.get('parent_id')
 
     if not text:
         return jsonify({'error': 'Comment cannot be empty.'}), 400
+
+    parent_comment = None
+    if parent_id:
+        champ_comments = comments.get(champ_name, [])
+        parent_comment = next((c for c in champ_comments if c.get('id') == parent_id), None)
+        if not parent_comment:
+            return jsonify({'error': 'Parent comment not found.'}), 404
 
     new_comment = {
         "id": str(uuid.uuid4()),
@@ -646,11 +773,20 @@ def add_comment(champ_name):
         "upvoters": [],
         "downvoters": [],
         "created_at": uuid.uuid1().hex,
+        "parent_id": parent_id,
     }
 
     champ_comments = comments.setdefault(champ_name, [])
     champ_comments.append(new_comment)
     save_comments(comments)
+
+    if parent_comment and parent_comment.get('author') and parent_comment.get('author') != user_email:
+        try:
+            link = url_for('champion_page', champ_name=champ_name) + f"#comment-{new_comment['id']}"
+            message = f"{get_display_name(user_email)} replied to your comment on {champ_name}."
+            add_notification(parent_comment['author'], message, link, champion=champ_name)
+        except Exception:
+            pass
 
     return jsonify({
         'id': new_comment['id'],
@@ -660,6 +796,7 @@ def add_comment(champ_name):
         'upvotes': 0,
         'downvotes': 0,
         'score': 0,
+        'parent_id': parent_id,
     }), 201
 
 
