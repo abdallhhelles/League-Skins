@@ -51,13 +51,16 @@
           </div>
           <div class="vote">
             <button class="vote__button" data-voted="{{ 'true' if vote_data.voted else 'false' }}">
-              {{ 'Remove vote' if vote_data.voted else 'Vote' }}
+              <span class="emoji-mono" aria-hidden="true">⬆</span> {{ 'Remove' if vote_data.voted else 'Vote' }}
             </button>
             <div class="vote__count" id="vote-count-{{ skin.skin_num }}">{{ vote_data.count }}</div>
-            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}">{{ 'Saved ' if vote_data.favorite else 'Save ' }}<span class="emoji-mono" aria-hidden="true">♥</span></button>
           </div>
         </div>
           <div class="skin-card__actions">
+            <button class="favorite__button" data-favorite="{{ 'true' if vote_data.favorite else 'false' }}" aria-label="Toggle favorite for {{ skin.skin_name }}">
+              <span class="emoji-mono" aria-hidden="true">♡</span>
+              <span class="sr-only">Favorite</span>
+            </button>
             <a class="skin-link" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query={{ champ_name | urlencode }}+{{ skin.skin_name | urlencode }}+SkinSpotlights">
               <span aria-hidden="true" class="icon">▶</span> Preview
             </a>
@@ -120,7 +123,7 @@
           countEl.textContent = data.votes;
           const isVoted = data.status === 'added';
           btn.dataset.voted = isVoted ? 'true' : 'false';
-          btn.textContent = isVoted ? 'Remove vote' : 'Vote';
+          btn.innerHTML = `<span class="emoji-mono" aria-hidden="true">⬆</span> ${isVoted ? 'Remove' : 'Vote'}`;
           sortSkins();
         } else {
           const error = await response.json();
@@ -150,7 +153,7 @@
         }
         const isAdded = data.status === 'added';
         btn.dataset.favorite = isAdded ? 'true' : 'false';
-        btn.innerHTML = isAdded ? 'Saved <span class="emoji-mono" aria-hidden="true">♥</span>' : 'Save <span class="emoji-mono" aria-hidden="true">♥</span>';
+        btn.innerHTML = `<span class="emoji-mono" aria-hidden="true">${isAdded ? '❤' : '♡'}</span><span class="sr-only">Favorite</span>`;
       } catch (err) {
         alert('Network error while updating favorite.');
       }
@@ -239,7 +242,7 @@
         <button class="comment__vote" data-direction="up"><span class="emoji-mono" aria-hidden="true">▲</span> {{ comment.upvotes }}</button>
         <button class="comment__vote" data-direction="down"><span class="emoji-mono" aria-hidden="true">▼</span> {{ comment.downvotes }}</button>
         {% if session.email %}
-          <button class="comment__reply" type="button">Reply</button>
+          <button class="comment__reply" type="button"><span class="emoji-mono" aria-hidden="true">↩</span> Reply</button>
         {% endif %}
       </div>
       {% if session.email %}
@@ -300,7 +303,7 @@
       <div class="comment__actions">
         <button class="comment__vote" data-direction="up"><span class="emoji-mono" aria-hidden="true">▲</span> ${data.upvotes ?? 0}</button>
         <button class="comment__vote" data-direction="down"><span class="emoji-mono" aria-hidden="true">▼</span> ${data.downvotes ?? 0}</button>
-        ${canReply ? '<button class="comment__reply" type="button">Reply</button>' : ''}
+        ${canReply ? '<button class="comment__reply" type="button"><span class="emoji-mono" aria-hidden="true">↩</span> Reply</button>' : ''}
       </div>
       ${canReply ? `
         <form class="reply-form" hidden>
