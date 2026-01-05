@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Notifications | League of Skins{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Notifications</p>
+    <h1>Your latest updates</h1>
+    <p class="lede">Replies to your comments and other important updates appear here.</p>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel__header">
+    <div>
+      <p class="eyebrow">Inbox</p>
+      <h2>{{ notifications|length }} notification{{ 's' if notifications|length != 1 else '' }}</h2>
+    </div>
+  </div>
+  <div class="notice-list">
+    {% if notifications %}
+      {% for note in notifications %}
+        <article class="notice notice--card">
+          <div class="notice__title">{{ note.message }}</div>
+          <div class="notice__meta">{{ note.created_at }}</div>
+          <a class="skin-link" href="{{ note.link }}">View</a>
+        </article>
+      {% endfor %}
+    {% else %}
+      <p class="muted">You're all caught up.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -37,6 +37,7 @@
       <button class="button ghost toggle" id="theme-toggle" type="button" aria-label="Toggle theme">Theme</button>
       {% if session.email %}
         <div class="welcome">Hi, {{ users[session.email].username if session.email in users else session.email.split('@')[0] }}</div>
+        <a class="button ghost" href="{{ url_for('notifications_page') }}">Notifications{% if unread_notifications %} ({{ unread_notifications }}){% endif %}</a>
         <a class="button ghost" href="{{ url_for('profile') }}">Profile</a>
         <a class="button ghost" href="{{ url_for('logout') }}">Logout</a>
       {% else %}
@@ -68,9 +69,9 @@
       <div class="footer-meta">© {{ current_year }} League of Skins. All rights reserved. Not affiliated with Riot Games; art &amp; trademarks belong to Riot Games.</div>
     </div>
     <div class="footer-links">
-      <a href="{{ url_for('legal') }}">Terms &amp; Privacy</a>
-      <a href="{{ url_for('about_page') }}">How it works</a>
+      <a href="{{ url_for('about_page') }}">About</a>
       <a href="{{ url_for('contact') }}">Contact</a>
+      <a href="{{ url_for('legal') }}">Terms &amp; Privacy</a>
     </div>
   </footer>
   <div class="cookie-bar" id="cookie-bar" hidden>
@@ -85,14 +86,14 @@
   <script>
     const toggle = document.getElementById('theme-toggle');
     const root = document.documentElement;
-    const themeLabel = () => root.classList.contains('theme-light') ? 'Light mode' : 'Dark mode';
+    const themeLabel = () => root.classList.contains('theme-light') ? '☀ Light' : '☾ Dark';
 
     if (toggle) {
-      toggle.textContent = themeLabel();
+      toggle.innerHTML = `<span class="emoji-mono" aria-hidden="true">${root.classList.contains('theme-light') ? '☀' : '☾'}</span> ${themeLabel().split(' ')[1]}`;
       toggle.addEventListener('click', () => {
         const isLight = root.classList.toggle('theme-light');
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        toggle.textContent = themeLabel();
+        toggle.innerHTML = `<span class="emoji-mono" aria-hidden="true">${isLight ? '☀' : '☾'}</span> ${themeLabel().split(' ')[1]}`;
       });
     }
 
